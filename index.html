@@ -1,89 +1,1271 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.1.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.1.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TricoMaster - Gerador de Protocolos</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { 
+            --gold-500:#c5a365; 
+            --gold-600:#b59254; 
+            --primary-900: rgb(1, 52, 37);
+            --primary-700: rgb(4, 78, 56);
+        }
+        .bg-gold-500{background-color:var(--gold-500)} .bg-gold-600{background-color:var(--gold-600)}
+        .text-gold-500{color:var(--gold-500)} .text-gold-600{color:var(--gold-600)}
+        .hover\:bg-gold-600:hover{background-color:var(--gold-600)} .font-sans{font-family:'Inter',sans-serif}
+        .line-through { text-decoration: line-through; }
+        .bg-primary-900 { background-color: var(--primary-900); }
+        .text-primary-900 { color: var(--primary-900); }
+        .border-primary-700 { border-color: var(--primary-700); }
+        .hover\:bg-primary-700:hover { background-color: var(--primary-700); }
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div id="app-container" class="flex h-screen bg-primary-900">
+        <div id="sidebar-container"></div>
+        <div id="main-content-container" class="flex-1 flex flex-col transition-all duration-300 ml-64">
+            <header id="header-container" class="bg-primary-900 p-4 border-b border-primary-700"></header>
+            <main id="page-content" class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto"></main>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <div id="modal-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // Vá no seu console do Firebase > Configurações do Projeto > (Geral) > Seus apps
+      // E copie o objeto de configuração aqui.
+      const firebaseConfig = {
+  apiKey: "AIzaSyDYXVn8c3CbJtDJ-DXsUIVdWsYJT7wCbYU",
+  authDomain: "protocolos-tricomaster.firebaseapp.com",
+  projectId: "protocolos-tricomaster",
+  storageBucket: "protocolos-tricomaster.firebasestorage.app",
+  messagingSenderId: "286261527035",
+  appId: "1:286261527035:web:9dab0e138d75b129550b5e"
+};
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
+      // Inicializa o Firebase
+      firebase.initializeApp(firebaseConfig);
     </script>
-  </body>
+
+    <script type="module">
+        const PERSIST_KEY = 'tricostate_v3';
+        const PERSIST_FIELDS = ['protocols','protocolTemplates','items','contacts','clinicInfo','doctors','professionals','textBlocks'];
+        const TEXT_CATEGORIES = {
+            'sobre_a_tricomaster': 'Sobre a TricoMaster',
+            'indicacao': 'Para quem é indicado',
+            'beneficios': 'Benefícios do tratamento',
+            'falta_tratamento': 'O que a falta de tratamento pode acarretar',
+            'geral': 'Geral / Adicional de Capa'
+        };
+
+        function persist() {
+            // No futuro, esta função será substituída para salvar no Firestore
+            const payload = {};
+            PERSIST_FIELDS.forEach(k => payload[k] = state[k]);
+            try { localStorage.setItem(PERSIST_KEY, JSON.stringify(payload)); } catch(e){ console.warn('Persist falhou', e); }
+        }
+        function loadPersist() {
+            // No futuro, esta função será substituída para carregar do Firestore
+            try {
+                const raw = localStorage.getItem(PERSIST_KEY);
+                if(raw){
+                    const data = JSON.parse(raw);
+                    PERSIST_FIELDS.forEach(k => { if (k in data && data[k] != null) state[k] = data[k]; });
+                } else {
+                    const oldRaw = localStorage.getItem('tricostate_v2') || localStorage.getItem('tricostate_v1');
+                    if (oldRaw){
+                        const old = JSON.parse(oldRaw);
+                        ['protocols','protocolTemplates','items','contacts','clinicInfo','doctors','professionals'].forEach(k => {
+                            if (old[k] != null) state[k] = old[k];
+                        });
+                        if (old.presentationText && (!state.textBlocks || state.textBlocks.length === 0)) {
+                            state.textBlocks = [{ id: 't1', name: 'Texto 1', content: old.presentationText }];
+                        }
+                        persist();
+                    }
+                }
+               
+                // --- DATA MIGRATIONS ---
+                (state.items || []).forEach(item => { if (!item.type) item.type = 'simple'; });
+
+                (state.protocols||[]).forEach(p => { 
+                    if (p.createdAt && !(p.createdAt instanceof Date)) p.createdAt = new Date(p.createdAt); 
+                    if (p.treatmentDurationMonths && !p.treatmentDuration) {
+                        p.treatmentDuration = `${p.treatmentDurationMonths} mes(es)`;
+                        delete p.treatmentDurationMonths;
+                    }
+                     if (typeof p.proposalValidityDays === 'undefined') p.proposalValidityDays = 30;
+                    if (p.status === 'Encerrado' && p.isRealizado) { p.status = 'Realizado'; delete p.isRealizado; }
+                    if (!p.coverTexts) p.coverTexts = {};
+                    if (!p.attachedTextIds) p.attachedTextIds = [];
+                });
+
+                 (state.protocolTemplates||[]).forEach(t => { 
+                    if (t.totalMonths && !t.treatmentDuration) {
+                        t.treatmentDuration = `${t.totalMonths} mes(es)`;
+                        delete t.totalMonths;
+                    }
+                    if (!t.coverTexts) t.coverTexts = {};
+                    if (!t.attachedTextIds) t.attachedTextIds = [];
+                });
+
+                (state.textBlocks || []).forEach(block => {
+                    if (!block.category) {
+                        block.category = 'geral';
+                        block.versionName = block.name;
+                        delete block.name;
+                    }
+                });
+
+
+            } catch(e) { console.warn('Load persist falhou', e); }
+        }
+
+        // --- Estado Global ---
+        let state = {
+            page: 'dashboard',
+            isSidebarCollapsed: false,
+            viewingGroupId: null,
+            protocols: [],
+            protocolTemplates: [],
+            items: [],
+            contacts: [],
+            clinicInfo: { name: 'Sua Clínica', cnpj: '', phone: '', whatsapp: '', site: '', address: '', address2: '', logo: 'https://via.placeholder.com/150x50/013425/c5a365?text=Sua+Clínica', printLogo: '' },
+            doctors: [{ id: 'doc1', name: 'Dr. João da Silva', crm: '123456-SP' }],
+            professionals: [{ id: 'prof1', name: 'Maria Souza' }],
+            textBlocks: [{ id: 't1', category: 'geral', versionName: 'Texto de Apresentação Padrão', content: 'Este é um texto de apresentação da clínica que pode ser editado e aparecerá nos documentos.' }],
+        };
+        loadPersist();
+
+        // --- DOM Elements ---
+        const sidebarContainer = document.getElementById('sidebar-container');
+        const headerContainer = document.getElementById('header-container');
+        const pageContent = document.getElementById('page-content');
+        const mainContainer = document.getElementById('main-content-container');
+        const modalContainer = document.getElementById('modal-container');
+
+        // --- Helper para criação de elementos DOM ---
+        function h(tag, attrs = {}, ...children) {
+            const el = document.createElement(tag);
+            for (const key in attrs) {
+                if (key.startsWith('on') && typeof attrs[key] === 'function') {
+                    el.addEventListener(key.substring(2).toLowerCase(), attrs[key]);
+                } else if (key === 'className') {
+                    el.className = attrs[key];
+                } else if (key === 'dataset') {
+                    Object.assign(el.dataset, attrs[key]);
+                } else {
+                    el.setAttribute(key, attrs[key]);
+                }
+            }
+            for (const child of children) {
+                if (typeof child === 'string' || typeof child === 'number') {
+                    el.appendChild(document.createTextNode(child));
+                } else if (child) {
+                    el.appendChild(child);
+                }
+            }
+            return el;
+        }
+       
+        const formatCurrency = (value) => `R$ ${Number(value).toFixed(2).replace('.', ',')}`;
+
+        function capitalizeWords(str) {
+            if (!str) return '';
+            return str.replace(/(^|\s)\w/g, c => c.toUpperCase());
+        }
+       
+        function getProtocolFinancials(protocol) {
+            if (!protocol) return { totalBruto: 0, totalDescontosIndividuais: 0, subtotalComDescontos: 0, valorDescontoGeral: 0, finalValue: 0 };
+            const totalBruto = (protocol.phases || []).reduce((sum, phase) => {
+                return sum + (phase.items || []).reduce((phaseSum, itemData) => {
+                    const itemInfo = state.items.find(i => i.id === itemData.id);
+                    return phaseSum + (itemInfo ? itemInfo.price * itemData.quantity : 0);
+                }, 0);
+            }, 0);
+            let totalDescontosIndividuais = 0;
+            (protocol.phases || []).forEach(phase => {
+                (phase.items || []).forEach(itemData => {
+                    const itemInfo = state.items.find(i => i.id === itemData.id);
+                    if (itemInfo) {
+                        const itemTotal = itemInfo.price * itemData.quantity;
+                        totalDescontosIndividuais += itemTotal * ((itemData.discountPercentage || 0) / 100);
+                    }
+                });
+            });
+            const subtotalComDescontos = totalBruto - totalDescontosIndividuais;
+            const valorDescontoGeral = subtotalComDescontos * ((protocol.discountPercentage || 0) / 100);
+            const finalValue = subtotalComDescontos - valorDescontoGeral;
+            return { totalBruto, totalDescontosIndividuais, subtotalComDescontos, valorDescontoGeral, finalValue };
+        }
+
+        window.navigateTo = (pageName, params = {}) => {
+            state.page = pageName;
+            state.viewingGroupId = params.groupId || null;
+            state.editingTemplate = params.templateId ? state.protocolTemplates.find(p => p.id === params.templateId) : null;
+            state.editingProtocol = params.protocolId ? state.protocols.find(p => p.id === params.protocolId) : null;
+            renderAll();
+        };
+       
+        function handleCopyTemplate(templateId) {
+            const originalTemplate = state.protocolTemplates.find(t => t.id === templateId);
+            if (!originalTemplate) {
+                alert('Modelo de protocolo original não encontrado!');
+                return;
+            }
+            const newTemplate = JSON.parse(JSON.stringify(originalTemplate));
+            newTemplate.id = `pt${Date.now()}`;
+            newTemplate.protocolName = `${originalTemplate.protocolName} - Cópia`;
+            state.protocolTemplates.push(newTemplate);
+            persist();
+            navigateTo('edit-protocolTemplate', { templateId: newTemplate.id });
+        }
+
+        const renderAll = () => {
+            renderSidebar();
+            renderHeader();
+            renderPage();
+            lucide.createIcons();
+        };
+
+        const renderSidebar = () => {
+            const navItems = [
+                { id:'dashboard', label:'Indicadores', icon:'home', page:'dashboard' },
+                { id:'protocols', label:'Protocolos', icon:'file-text', page:'protocols' },
+                { id:'contacts', label:'Cliente', icon:'users', page:'contacts' },
+                { id:'protocolTemplates', label:'Protocolos TricoMaster', icon:'file-spreadsheet', page:'protocolTemplates' },
+                { id:'items', label:'Procedimentos', icon:'package', page:'items' },
+                { id:'textos', label:'Textos', icon:'type', page:'textos' },
+                { id:'profile', label:'Perfil', icon:'user', page:'profile' },
+            ];
+            const collapsedClass = state.isSidebarCollapsed ? 'w-20' : 'w-64';
+            sidebarContainer.className = `fixed top-0 left-0 h-full bg-primary-900 text-white flex flex-col transition-all duration-300 ${collapsedClass}`;
+            mainContainer.style.marginLeft = state.isSidebarCollapsed ? '80px' : '256px';
+            sidebarContainer.innerHTML = `<div class="flex items-center justify-between p-4 border-b border-primary-700 h-[65px] ${state.isSidebarCollapsed ? 'px-2' : 'px-4'}">${!state.isSidebarCollapsed ? `<span class="text-xl font-bold text-gold-500">${state.clinicInfo.name || 'TricoMaster'}</span>` : ''}<button id="collapse-btn" class="p-2 rounded-md hover:bg-primary-700 text-white"><i data-lucide="${state.isSidebarCollapsed ? 'chevron-right' : 'chevron-left'}"></i></button></div><nav class="flex-1 mt-4">${navItems.map(item => `<button data-page="${item.page}" class="nav-btn flex items-center w-full text-left px-4 py-3 my-1 transition-colors duration-200 ${state.isSidebarCollapsed ? 'justify-center' : ''} ${state.page === item.page ? 'bg-gold-500 text-primary-900' : 'hover:bg-primary-700'}" title="${state.isSidebarCollapsed ? item.label : ''}"><i data-lucide="${item.icon}" class="${!state.isSidebarCollapsed ? 'mr-4' : ''}"></i>${!state.isSidebarCollapsed ? `<span>${item.label}</span>` : ''}</button>`).join('')}</nav><div class="p-4 border-t border-primary-700"><button class="flex items-center w-full text-left px-4 py-3 transition-colors duration-200 hover:bg-red-500 rounded-md ${state.isSidebarCollapsed ? 'justify-center' : ''}"><i data-lucide="log-out" class="${!state.isSidebarCollapsed ? 'mr-4' : ''}"></i>${!state.isSidebarCollapsed ? '<span>Sair</span>' : ''}</button></div>`;
+            document.getElementById('collapse-btn').onclick = () => { state.isSidebarCollapsed = !state.isSidebarCollapsed; renderAll(); };
+            document.querySelectorAll('.nav-btn').forEach(btn => { btn.onclick = () => navigateTo(btn.dataset.page); });
+        };
+        const renderHeader = () => {
+            const pageTitles = {
+                dashboard: 'Indicadores', protocols: 'Protocolos de Clientes', 'new-protocol': 'Novo Protocolo de Cliente',
+                'edit-protocol': 'Editar Protocolo de Cliente', 'protocol-preview': 'Pré-visualização do Protocolo',
+                'protocol-group-view': 'Opções da Proposta',
+                protocolTemplates: 'Protocolos TricoMaster', 'new-protocolTemplate': 'Novo Protocolo TricoMaster',
+                'edit-protocolTemplate': 'Editar Protocolo TricoMaster', items: 'Procedimentos', contacts: 'Clientes',
+                textos: 'Textos', profile: 'Perfil da Clínica'
+            };
+            headerContainer.innerHTML = `<div class="flex items-center h-full"><h1 class="text-xl font-semibold text-white">${pageTitles[state.page] || 'Dashboard'}</h1></div>`;
+        };
+       
+        const renderPage = () => {
+            pageContent.innerHTML = '<div class="flex items-center justify-center h-full"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gold-500"></div></div>';
+            setTimeout(() => {
+                try {
+                    const pageRenderers = {
+                        'dashboard': renderDashboard, 'protocols': renderProtocolList, 'new-protocol': renderProtocolGenerator,
+                        'edit-protocol': renderProtocolEditor, 'protocol-preview': renderProtocolPreview,
+                        'protocol-group-view': renderProtocolGroupView,
+                        'protocolTemplates': renderProtocolTemplateList, 'new-protocolTemplate': renderProtocolTemplateGenerator,
+                        'edit-protocolTemplate': renderProtocolTemplateGenerator, 'items': renderItemList,
+                        'contacts': renderContactList, 'textos': renderTextsPage, 'profile': renderProfilePage
+                    };
+                    const renderer = pageRenderers[state.page] || renderDashboard;
+                    renderer();
+                    lucide.createIcons();
+                } catch (e) {
+                    console.error("Erro ao renderizar a página:", e);
+                    pageContent.innerHTML = `<div class="text-red-500 p-4 bg-red-100 border border-red-500 rounded-md">Ocorreu um erro grave. Por favor, recarregue a página ou restaure um backup. Detalhe: ${e.message}</div>`;
+                }
+            }, 50);
+        };
+       
+        // --- Funções de Renderização das Páginas ---
+       
+        function renderDashboard() {
+            const allProtocols = state.protocols || [];
+            const openProtocolsCount = allProtocols.filter(p => p.status === 'Aberto').length;
+            const closedProtocolsCount = allProtocols.filter(p => p.status === 'Encerrado').length;
+            const realizadosProtocolsCount = allProtocols.filter(p => p.status === 'Realizado').length;
+
+            const doctorsStats = (state.doctors || []).map(doctor => {
+                const protocolsForDoctor = allProtocols.filter(p => p.doctorId === doctor.id);
+                const total = protocolsForDoctor.length;
+                const realizados = protocolsForDoctor.filter(p => p.status === 'Realizado').length;
+                const encerrados = protocolsForDoctor.filter(p => p.status === 'Encerrado').length;
+                const abertos = total - realizados - encerrados;
+                const percentage = total > 0 ? (realizados / total) * 100 : 0;
+                return { name: doctor.name, total, abertos, encerrados, realizados, percentage };
+            });
+            const recentProtocols = [...allProtocols].sort((a, b) => (new Date(b.createdAt) || 0) - (new Date(a.createdAt) || 0)).slice(0, 5);
+            const statusBadgeClass = (status) => {
+                switch(status) {
+                    case 'Aberto': return 'bg-green-100 text-green-800';
+                    case 'Encerrado': return 'bg-blue-100 text-blue-800';
+                    case 'Realizado': return 'bg-purple-100 text-purple-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            };
+            pageContent.innerHTML = `<div class="space-y-6 max-w-5xl mx-auto"><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="bg-white p-6 rounded-lg shadow"><h3 class="text-gray-500 text-sm font-medium">PROTOCOLOS ABERTOS</h3><p class="text-3xl font-bold text-gray-800 mt-1">${openProtocolsCount}</p></div><div class="bg-white p-6 rounded-lg shadow"><h3 class="text-gray-500 text-sm font-medium">PROTOCOLOS REALIZADOS</h3><p class="text-3xl font-bold text-gray-800 mt-1">${realizadosProtocolsCount}</p></div><div class="bg-white p-6 rounded-lg shadow"><h3 class="text-gray-500 text-sm font-medium">PROTOCOLOS ENCERRADOS</h3><p class="text-3xl font-bold text-gray-800 mt-1">${closedProtocolsCount}</p></div></div><div class="bg-white p-6 rounded-lg shadow"><h3 class="font-semibold text-lg mb-4">Desempenho por Médico</h3><div class="space-y-5">${doctorsStats.map(doc => `<div class="space-y-1"><div class="flex justify-between items-center mb-1"><p class="font-medium text-gray-800">${doc.name}</p><p class="text-xs text-gray-500"><span class="font-semibold">Total: ${doc.total}</span> | <span class="text-green-600">Abertos: ${doc.abertos}</span> | <span class="text-purple-600">Realizados: ${doc.realizados}</span> | <span class="text-blue-600">Encerrados: ${doc.encerrados}</span></p></div><div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-gold-500 h-2.5 rounded-full transition-all duration-500" style="width: ${doc.percentage.toFixed(0)}%"></div></div><p class="text-right text-sm font-semibold text-gold-600">${doc.percentage.toFixed(0)}% de conversão</p></div>`).join('') || '<p class="text-gray-500">Nenhum médico cadastrado para exibir estatísticas.</p>'}</div></div><div class="bg-white p-4 rounded-lg shadow"><h3 class="font-semibold text-lg mb-4">Protocolos Recentes</h3><div class="space-y-2">${recentProtocols.map(p => `<div class="flex justify-between items-center p-2 rounded hover:bg-gray-50"><div><p class="font-medium">${p.protocolName}</p><p class="text-sm text-gray-500">${p.contactName} - ${p.doctorName || 'N/D'}</p></div><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusBadgeClass(p.status)}">${p.status}</span></div>`).join('') || '<p class="text-gray-500">Nenhum protocolo recente.</p>'}</div></div></div>`;
+        }
+
+        function autoCloseOldProtocols() {
+            const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+            let wasChanged = false;
+            state.protocols.forEach(p => {
+                if (p.status === 'Aberto' && p.createdAt && new Date(p.createdAt) < sixtyDaysAgo) {
+                    p.status = 'Encerrado';
+                    wasChanged = true;
+                }
+            });
+            if (wasChanged) {
+                persist();
+            }
+        }
+       
+        function renderProtocolList() {
+            autoCloseOldProtocols(); 
+
+            pageContent.innerHTML = `<div class="bg-white p-6 rounded-lg shadow max-w-5xl mx-auto"><div class="flex justify-between items-center mb-4"><div class="relative"><i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i><input id="search-protocol" type="text" placeholder="Buscar proposta, cliente, médico..." class="pl-10 pr-4 py-2 border rounded-lg w-80"/></div><button id="new-protocol-btn" class="bg-gold-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gold-600"><i data-lucide="plus"></i> Nova Proposta</button></div><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="border-b"><th class="p-4">Proposta / Protocolo</th><th class="p-4">Cliente</th><th class="p-4">Médico</th><th class="p-4">Status</th><th class="p-4">Valor(es)</th><th class="p-4">Data</th><th class="p-4"></th></tr></thead><tbody id="protocol-table-body"></tbody></table></div></div>`;
+            document.getElementById('new-protocol-btn').onclick = () => navigateTo('new-protocol');
+           
+            const searchInput = document.getElementById('search-protocol');
+            const tableBody = document.getElementById('protocol-table-body');
+           
+            const renderTableRows = (protocolGroups) => {
+                const groupEntries = Object.values(protocolGroups);
+
+                tableBody.innerHTML = groupEntries.map(group => {
+                    if (group.length > 1) { // Render Group Row
+                        const first = group[0];
+                        const values = group.map(p => getProtocolFinancials(p).finalValue);
+                        const minVal = Math.min(...values);
+                        const maxVal = Math.max(...values);
+                        const valueText = minVal === maxVal ? formatCurrency(minVal) : `de ${formatCurrency(minVal)} à ${formatCurrency(maxVal)}`;
+
+                        const hasRealizado = group.some(p => p.status === 'Realizado');
+                        const hasAberto = group.some(p => p.status === 'Aberto');
+                       
+                        let statusText, statusClass, proposalActionButton;
+                        if (hasRealizado) {
+                            statusText = 'Realizado';
+                            statusClass = 'bg-purple-100 text-purple-800';
+                            proposalActionButton = '';
+                        } else if (hasAberto) {
+                            statusText = 'Proposta';
+                            statusClass = 'bg-yellow-100 text-yellow-800';
+                            proposalActionButton = `<button title="Encerrar Proposta" class="close-group-btn p-1 hover:bg-gray-200 rounded-full" data-ids="${group.map(p=>p.id).join(',')}"><i data-lucide="x-circle" class="h-4 w-4 text-orange-600"></i></button>`;
+                        } else {
+                            statusText = 'Encerrado';
+                            statusClass = 'bg-blue-100 text-blue-800';
+                            proposalActionButton = `<button title="Reabrir Proposta" class="reopen-group-btn p-1 hover:bg-gray-200 rounded-full" data-ids="${group.map(p=>p.id).join(',')}"><i data-lucide="rotate-cw" class="h-4 w-4 text-green-600"></i></button>`;
+                        }
+
+                        return `<tr class="border-b bg-gray-50 hover:bg-gray-100">
+                                <td class="p-4">
+                                    <div class="font-medium">Proposta Comparativa (${group.length} opções)</div>
+                                    <div class="text-xs text-gray-500 mt-1">${group.map(p => p.protocolName).join(' / ')}</div>
+                                </td>
+                                <td class="p-4">${first.contactName}</td>
+                                <td class="p-4">${first.doctorName || 'N/D'}</td>
+                                <td class="p-4"><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">${statusText}</span></td>
+                                <td class="p-4">${valueText}</td>
+                                <td class="p-4">${new Date(first.createdAt)?.toLocaleDateString('pt-BR')}</td>
+                                <td class="p-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button title="Ver Opções" class="view-group-btn p-1 hover:bg-gray-200 rounded-full" data-id="${first.proposalGroupId}"><i data-lucide="list" class="h-4 w-4"></i></button>
+                                        <button title="Imprimir Comparativo" class="print-group-btn p-1 hover:bg-gray-200 rounded-full" data-ids="${group.map(p=>p.id).join(',')}"><i data-lucide="printer" class="h-4 w-4 text-blue-500"></i></button>
+                                        ${proposalActionButton}
+                                        <button title="Deletar Proposta" class="delete-group-btn p-1 hover:bg-gray-200 rounded-full" data-ids="${group.map(p=>p.id).join(',')}"><i data-lucide="trash-2" class="h-4 w-4 text-red-500"></i></button>
+                                    </div>
+                                </td>
+                            </tr>`;
+                    } else { // Render Single Protocol Row
+                        const p = group[0];
+                        const { finalValue } = getProtocolFinancials(p);
+                        const phasesCount = (p.phases || []).length;
+                        let subtitle = `Tratamento com duração de ${p.treatmentDuration || '[não informado]'}`;
+                        subtitle += `, em ${phasesCount} fase${phasesCount > 1 ? 's' : ''}`;
+                        if (p.totalSessions) {
+                            subtitle += `, totalizando ${p.totalSessions} sessões.`;
+                        } else {
+                            subtitle += ".";
+                        }
+                       
+                        let statusClass;
+                        switch(p.status) {
+                            case 'Aberto': statusClass = 'bg-green-100 text-green-800'; break;
+                            case 'Encerrado': statusClass = 'bg-blue-100 text-blue-800'; break;
+                            case 'Realizado': statusClass = 'bg-purple-100 text-purple-800'; break;
+                            default: statusClass = 'bg-gray-100 text-gray-800';
+                        }
+                       
+                        return `<tr class="border-b hover:bg-gray-50">
+                                <td class="p-4"><div class="font-medium">${p.protocolName}</div><div class="text-xs text-gray-500 mt-1">${phasesCount > 0 ? subtitle : ''}</div></td>
+                                <td class="p-4">${p.contactName}</td><td class="p-4">${p.doctorName || 'N/D'}</td>
+                                <td class="p-4"><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">${p.status}</span></td>
+                                <td class="p-4">${formatCurrency(finalValue)}</td>
+                                <td class="p-4">${new Date(p.createdAt)?.toLocaleDateString('pt-BR')}</td>
+                                <td class="p-4 text-right"><div class="flex items-center justify-end gap-2"><button title="Editar" class="edit-protocol-btn p-1 hover:bg-gray-200 rounded-full" data-id="${p.id}"><i data-lucide="edit" class="h-4 w-4"></i></button><button title="Mudar Status" class="toggle-status-btn p-1 hover:bg-gray-200 rounded-full" data-id="${p.id}"><i data-lucide="refresh-cw" class="h-4 w-4 text-blue-500"></i></button><button title="Imprimir" class="print-protocol-btn p-1 hover:bg-gray-200 rounded-full" data-id="${p.id}"><i data-lucide="printer" class="h-4 w-4"></i></button><button title="Deletar" class="delete-protocol-btn p-1 hover:bg-gray-200 rounded-full" data-id="${p.id}"><i data-lucide="trash-2" class="h-4 w-4 text-red-500"></i></button></div></td>
+                            </tr>`;
+                    }
+                }).join('');
+
+                lucide.createIcons();
+                // Single protocol actions
+                document.querySelectorAll('.delete-protocol-btn').forEach(btn => btn.onclick = () => { if(confirm("Tem certeza que deseja apagar este protocolo?")) { state.protocols = state.protocols.filter(p => p.id !== btn.dataset.id); persist(); renderPage(); } });
+                document.querySelectorAll('.edit-protocol-btn').forEach(btn => btn.onclick = () => navigateTo('edit-protocol', { protocolId: btn.dataset.id }));
+                document.querySelectorAll('.print-protocol-btn').forEach(btn => btn.onclick = () => navigateTo('protocol-preview', { protocolId: btn.dataset.id }));
+                document.querySelectorAll('.toggle-status-btn').forEach(btn => btn.onclick = () => { const protocol = state.protocols.find(p => p.id === btn.dataset.id); if (protocol) { const statuses = ['Aberto', 'Realizado', 'Encerrado']; const currentIndex = statuses.indexOf(protocol.status); protocol.status = statuses[(currentIndex + 1) % statuses.length]; persist(); renderPage(); } });
+
+                // Group actions
+                document.querySelectorAll('.delete-group-btn').forEach(btn => btn.onclick = () => { const idsToDelete = btn.dataset.ids.split(','); if(confirm(`Tem certeza que deseja apagar esta proposta com ${idsToDelete.length} opções?`)) { state.protocols = state.protocols.filter(p => !idsToDelete.includes(p.id)); persist(); renderPage(); } });
+                document.querySelectorAll('.close-group-btn').forEach(btn => btn.onclick = () => { const ids = btn.dataset.ids.split(','); if(confirm(`Tem certeza que deseja encerrar esta proposta?`)) { state.protocols.forEach(p => { if (ids.includes(p.id)) p.status = 'Encerrado'; }); persist(); renderPage(); } });
+                document.querySelectorAll('.reopen-group-btn').forEach(btn => btn.onclick = () => { const ids = btn.dataset.ids.split(','); if(confirm(`Tem certeza que deseja reabrir esta proposta?`)) { state.protocols.forEach(p => { if (ids.includes(p.id) && p.status !== 'Realizado') p.status = 'Aberto'; }); persist(); renderPage(); } });
+                document.querySelectorAll('.print-group-btn').forEach(btn => btn.onclick = () => { const idsToPrint = btn.dataset.ids.split(','); printComparison(idsToPrint); });
+                document.querySelectorAll('.view-group-btn').forEach(btn => btn.onclick = () => navigateTo('protocol-group-view', { groupId: btn.dataset.id }));
+            };
+           
+            const allProtocols = [...(state.protocols || [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const groupProtocols = (protocols) => {
+                const groups = {};
+                protocols.forEach(p => {
+                    const groupId = p.proposalGroupId || p.id;
+                    if (!groups[groupId]) groups[groupId] = [];
+                    groups[groupId].push(p);
+                });
+                return groups;
+            };
+
+            const runFilterAndRender = () => {
+                const term = searchInput.value.toLowerCase();
+                const filtered = term ? allProtocols.filter(p => p.protocolName?.toLowerCase().includes(term) || p.contactName?.toLowerCase().includes(term) || p.doctorName?.toLowerCase().includes(term)) : allProtocols;
+                const grouped = groupProtocols(filtered);
+                renderTableRows(grouped);
+            };
+
+            searchInput.onkeyup = runFilterAndRender;
+            runFilterAndRender();
+        }
+
+        function renderProtocolGroupView() {
+            if (!state.viewingGroupId) {
+                pageContent.innerHTML = `<p>Grupo de protocolos não encontrado.</p>`;
+                return;
+            }
+            const protocolsInGroup = state.protocols.filter(p => p.proposalGroupId === state.viewingGroupId)
+                .sort((a,b) => a.protocolName.localeCompare(b.protocolName));
+
+            if (protocolsInGroup.length === 0) {
+                 pageContent.innerHTML = `<p>Nenhum protocolo encontrado para este grupo.</p><button id="back-btn">Voltar</button>`;
+                 document.getElementById('back-btn').onclick = () => navigateTo('protocols');
+                 return;
+            }
+
+            const clientName = protocolsInGroup[0].contactName;
+            const isProposalFinalized = protocolsInGroup.some(p => p.status === 'Realizado');
+
+            const page = h('div', {className: 'bg-white p-6 rounded-lg shadow max-w-5xl mx-auto'},
+                h('div', {className: 'flex justify-between items-center mb-4'},
+                    h('h2', {className: 'text-xl font-bold'}, `Opções da Proposta para: ${clientName}`),
+                    h('button', {id: 'back-btn', className: 'bg-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-300'}, h('i', {'data-lucide':'arrow-left'}), 'Voltar para Lista')
+                ),
+                h('div', {className: 'overflow-x-auto'},
+                    h('table', {className: 'w-full text-left'},
+                        h('thead', {}, h('tr', {className: 'border-b'}, h('th', {className: 'p-4'}, 'Protocolo'), h('th', {className: 'p-4'}, 'Status'), h('th', {className: 'p-4'}, 'Valor Final'), h('th', {className: 'p-4'}))),
+                        h('tbody', {}, ...protocolsInGroup.map(p => {
+                            const { finalValue } = getProtocolFinancials(p);
+                            let statusClass;
+                            switch(p.status) {
+                                case 'Aberto': statusClass = 'bg-green-100 text-green-800'; break;
+                                case 'Encerrado': statusClass = 'bg-blue-100 text-blue-800'; break;
+                                case 'Realizado': statusClass = 'bg-purple-100 text-purple-800'; break;
+                                default: statusClass = 'bg-gray-100 text-gray-800';
+                            }
+                            const markAsRealizadoButton = (!isProposalFinalized && p.status === 'Aberto') ? 
+                                h('button', { title: 'Marcar como Realizado', className: 'mark-realizado-btn p-1 hover:bg-gray-200 rounded-full', dataset: { id: p.id, groupId: p.proposalGroupId }}, h('i', { 'data-lucide': 'check', className: 'h-4 w-4 text-green-600' })) : null;
+
+                            return h('tr', {className: 'border-b hover:bg-gray-50'},
+                                h('td', {className: 'p-4 font-medium'}, p.protocolName),
+                                h('td', {className: 'p-4'}, h('span', {className: `px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`}, p.status)),
+                                h('td', {className: 'p-4'}, formatCurrency(finalValue)),
+                                h('td', { className: 'p-4 text-right' }, 
+                                    h('div', { className: 'flex items-center justify-end gap-2' }, 
+                                        markAsRealizadoButton,
+                                        h('button', { title: 'Editar', className: 'edit-protocol-btn p-1 hover:bg-gray-200 rounded-full', dataset: { id: p.id }}, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })),
+                                        h('button', { title: 'Mudar Status', className: 'toggle-status-btn p-1 hover:bg-gray-200 rounded-full', dataset: { id: p.id }}, h('i', { 'data-lucide': 'refresh-cw', className: 'h-4 w-4 text-blue-500' })),
+                                        h('button', { title: 'Imprimir Detalhado', className: 'print-protocol-btn p-1 hover:bg-gray-200 rounded-full', dataset: { id: p.id }}, h('i', { 'data-lucide': 'printer', className: 'h-4 w-4' })),
+                                        h('button', { title: 'Deletar Opção', className: 'delete-protocol-btn p-1 hover:bg-gray-200 rounded-full', dataset: { id: p.id }}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))
+                                    )
+                                )
+                            )
+                        }))
+                    )
+                )
+            );
+           
+            pageContent.replaceChildren(page);
+            document.getElementById('back-btn').onclick = () => navigateTo('protocols');
+            document.querySelectorAll('.edit-protocol-btn').forEach(btn => btn.onclick = () => navigateTo('edit-protocol', { protocolId: btn.dataset.id }));
+            document.querySelectorAll('.print-protocol-btn').forEach(btn => btn.onclick = () => navigateTo('protocol-preview', { protocolId: btn.dataset.id }));
+            document.querySelectorAll('.toggle-status-btn').forEach(btn => btn.onclick = () => { const protocol = state.protocols.find(p => p.id === btn.dataset.id); if (protocol) { const statuses = ['Aberto', 'Realizado', 'Encerrado']; const currentIndex = statuses.indexOf(protocol.status); protocol.status = statuses[(currentIndex + 1) % statuses.length]; persist(); renderPage(); } });
+            document.querySelectorAll('.delete-protocol-btn').forEach(btn => btn.onclick = () => { if(confirm("Tem certeza que deseja apagar esta opção de protocolo?")) { state.protocols = state.protocols.filter(p => p.id !== btn.dataset.id); persist(); renderPage(); } });
+            document.querySelectorAll('.mark-realizado-btn').forEach(btn => btn.onclick = () => {
+                if(confirm("Marcar este protocolo como 'Realizado'? As outras opções desta proposta serão encerradas.")) {
+                    const protocolId = btn.dataset.id;
+                    const groupId = btn.dataset.groupId;
+                    state.protocols.forEach(p => {
+                        if (p.proposalGroupId === groupId) {
+                            p.status = p.id === protocolId ? 'Realizado' : 'Encerrado';
+                        }
+                    });
+                    persist();
+                    renderPage();
+                }
+            });
+        }
+       
+        function renderProtocolGenerator() {
+            let selectedTemplates = [];
+            let currentLineFilter = 'Todos';
+            let currentCategoryFilter = 'Todos';
+
+            const page = h('form', { id: 'protocol-form', className: 'bg-white p-6 rounded-lg shadow space-y-6 max-w-4xl mx-auto' });
+           
+            const rerenderSelections = () => {
+                const selectionContainer = document.getElementById('selection-container');
+                const dropdown = document.getElementById('template-select');
+                const addButton = document.getElementById('add-template-btn');
+
+                selectionContainer.innerHTML = '';
+                selectedTemplates.forEach(template => {
+                    const el = h('div', {className: 'flex items-center justify-between bg-gray-100 p-2 rounded'},
+                        h('span', {}, template.protocolName),
+                        h('button', {type: 'button', className: 'p-1 text-red-500 hover:bg-red-100 rounded-full', onclick: () => {
+                            selectedTemplates = selectedTemplates.filter(t => t.id !== template.id);
+                            rerenderSelections();
+                        }}, h('i', {'data-lucide': 'x', className:'h-4 w-4'}))
+                    );
+                    selectionContainer.appendChild(el);
+                });
+                lucide.createIcons();
+
+                let availableTemplates = [...state.protocolTemplates];
+
+                if (currentLineFilter !== 'Todos') {
+                    availableTemplates = availableTemplates.filter(t => t.protocolName.toLowerCase().includes(currentLineFilter.toLowerCase()));
+                }
+                if (currentCategoryFilter !== 'Todos') {
+                    availableTemplates = availableTemplates.filter(t => t.category === currentCategoryFilter);
+                }
+               
+                availableTemplates = availableTemplates.filter(t => !selectedTemplates.find(st => st.id === t.id))
+                    .sort((a,b) => a.protocolName.localeCompare(b.protocolName));
+               
+                dropdown.innerHTML = '<option value="">Selecione...</option>';
+                availableTemplates.forEach(t => dropdown.appendChild(h('option', {value: t.id}, t.protocolName)));
+
+                addButton.disabled = selectedTemplates.length >= 4;
+            };
+
+            const lines = ["Todos", "Diamond", "Platinum", "Gold", "Chromo"];
+            const categoryOptions = ["Androgenética", "Areata", "Cicatricial", "Crescimento", "Queda"].sort();
+            const categories = ["Todos", ...categoryOptions];
+
+            const formContent = [
+                h('h2', { className: 'text-xl font-bold text-center' }, 'Gerar Proposta para Cliente'),
+                h('div', {},
+                    h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Selecione o Cliente'),
+                    h('select', { id: 'contactId', required: true, className: 'w-full p-2 border rounded-md' },
+                        h('option', {value: ''}, 'Selecione...'),
+                        ...[...state.contacts].sort((a,b) => a.name.localeCompare(b.name)).map(c => h('option', {value: c.id}, c.name))
+                    )
+                ),
+                h('div', {className: 'space-y-4 border p-4 rounded-md'},
+                    h('div', {className: 'grid grid-cols-2 gap-4'},
+                        h('div', {}, 
+                            h('label', {className: 'block text-sm font-medium text-gray-700 mb-1'}, 'Filtrar por Linha'),
+                            h('select', {id: 'line-filter', className: 'w-full p-2 border rounded-md'}, ...lines.map(l => h('option', {value: l}, l)))
+                        ),
+                         h('div', {}, 
+                            h('label', {className: 'block text-sm font-medium text-gray-700 mb-1'}, 'Filtrar por Categoria'),
+                            h('select', {id: 'category-filter', className: 'w-full p-2 border rounded-md'}, ...categories.map(c => h('option', {value: c}, c)))
+                        )
+                    ),
+                    h('div', {},
+                        h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Adicionar Opções de Protocolo (até 4)'),
+                        h('div', {className: 'flex items-center gap-2'},
+                            h('select', {id: 'template-select', className: 'w-full p-2 border rounded-md'}),
+                            h('button', {id: 'add-template-btn', type: 'button', className: 'bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 whitespace-nowrap disabled:bg-gray-400'}, 'Adicionar')
+                        )
+                    ),
+                    h('div', {id: 'selection-container', className: 'mt-2 space-y-1'})
+                ),
+                h('div', {},
+                    h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Selecione o Médico Responsável'),
+                    h('select', { id: 'doctorId', required: true, className: 'w-full p-2 border rounded-md' },
+                        h('option', {value: ''}, 'Selecione...'),
+                        ...[...state.doctors].sort((a,b) => a.name.localeCompare(b.name)).map(d => h('option', {value: d.id}, `${d.name} - ${d.crm}`))
+                    )
+                ),
+                h('div', { className: 'flex justify-end gap-4 pt-4 border-t' },
+                    h('button', { type: 'button', className: 'bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300', onclick: () => navigateTo('protocols') }, 'Cancelar'),
+                    h('button', { type: 'submit', className: 'bg-gold-500 text-white px-6 py-2 rounded-lg hover:bg-gold-600' }, 'Gerar Proposta')
+                )
+            ];
+
+            page.append(...formContent);
+            pageContent.replaceChildren(page);
+           
+            document.getElementById('line-filter').onchange = (e) => { currentLineFilter = e.target.value; rerenderSelections(); };
+            document.getElementById('category-filter').onchange = (e) => { currentCategoryFilter = e.target.value; rerenderSelections(); };
+           
+            document.getElementById('add-template-btn').onclick = () => {
+                const select = document.getElementById('template-select');
+                const templateId = select.value;
+                if (templateId && selectedTemplates.length < 4) {
+                    const template = state.protocolTemplates.find(t => t.id === templateId);
+                    if (template) {
+                        selectedTemplates.push(template);
+                        rerenderSelections();
+                    }
+                }
+            };
+           
+            rerenderSelections();
+
+            page.onsubmit = (e) => { 
+                e.preventDefault(); 
+               
+                if (selectedTemplates.length === 0) {
+                    alert("Por favor, adicione pelo menos um protocolo.");
+                    return;
+                }
+
+                const contact = state.contacts.find(c => c.id === document.getElementById('contactId').value); 
+                const doctor = state.doctors.find(d => d.id === document.getElementById('doctorId').value); 
+               
+                if (!contact || !doctor) return alert("Por favor, selecione um cliente e um médico válidos."); 
+
+                const proposalGroupId = `pg${Date.now()}`;
+                const newProtocols = selectedTemplates.map(template => {
+                    return { 
+                        id: `p${Date.now()}${Math.random()}`, 
+                        proposalGroupId: selectedTemplates.length > 1 ? proposalGroupId : null,
+                        protocolName: template.protocolName, 
+                        contactId: contact.id, contactName: contact.name, 
+                        doctorId: doctor.id, doctorName: doctor.name, doctorCrm: doctor.crm, 
+                        status: 'Aberto', 
+                        totalValue: template.totalValue, 
+                        phases: JSON.parse(JSON.stringify(template.phases)), 
+                        createdAt: new Date(), 
+                        discountPercentage: 0, 
+                        coverTexts: template.coverTexts ? JSON.parse(JSON.stringify(template.coverTexts)) : {},
+                        attachedTextIds: template.attachedTextIds ? JSON.parse(JSON.stringify(template.attachedTextIds)) : [], 
+                        finalObservations: '', 
+                        treatmentDuration: template.treatmentDuration || '', 
+                        totalSessions: template.totalSessions || '', 
+                        proposalValidityDays: 30, 
+                    };
+                }).filter(Boolean);
+
+                state.protocols.push(...newProtocols);
+                persist(); 
+                alert(`Proposta com ${newProtocols.length} opç${newProtocols.length > 1 ? 'ões' : 'ão'} gerada com sucesso!`); 
+                navigateTo('protocols'); 
+            };
+        }
+
+        function renderProtocolEditor() {
+            const p = state.editingProtocol;
+            if (!p) { pageContent.innerHTML = `<p>Protocolo não encontrado.</p>`; return; }
+            let currentPhases = JSON.parse(JSON.stringify(p.phases || []));
+            currentPhases.forEach(phase => { phase.items = (phase.items || []).map(itemData => ({ ...state.items.find(i => i.id === itemData.id), quantity: itemData.quantity, discountPercentage: itemData.discountPercentage || 0 })).filter(Boolean); });
+            let currentGeneralDiscount = p.discountPercentage || 0;
+            let currentAttachedTextIds = [...(p.attachedTextIds || [])];
+            let currentFinalObservations = p.finalObservations || '';
+            let currentProposalValidity = p.proposalValidityDays || 30;
+            
+            const renderFinancialSummary = () => { const financialContainer = document.getElementById('financial-summary-container'); let totalBruto = 0; let totalDescontosIndividuais = 0; currentPhases.forEach(phase => { (phase.items || []).forEach(item => { const itemTotal = item.price * item.quantity; totalBruto += itemTotal; totalDescontosIndividuais += itemTotal * ((item.discountPercentage || 0) / 100); }); }); const subtotalComDescontos = totalBruto - totalDescontosIndividuais; const valorDescontoGeral = subtotalComDescontos * (currentGeneralDiscount / 100); const valorFinal = subtotalComDescontos - valorDescontoGeral; financialContainer.innerHTML = `<div class="bg-gray-50 p-4 rounded-lg"><h3 class="text-lg font-bold mb-3 border-b pb-2">Resumo Financeiro</h3><div class="space-y-2 text-sm"><div class="flex justify-between"><span>Subtotal Bruto:</span><span class="font-medium">${formatCurrency(totalBruto)}</span></div><div class="flex justify-between text-red-600"><span>Descontos por Procedimento:</span><span class="font-medium">-${formatCurrency(totalDescontosIndividuais)}</span></div><div class="flex justify-between font-semibold border-t pt-2 mt-1"><span>Subtotal com Descontos:</span><span>${formatCurrency(subtotalComDescontos)}</span></div><hr class="my-2"/><div class="flex justify-between items-center"><label for="general-discount" class="font-semibold">Desconto Geral (%):</label><input type="number" id="general-discount" min="0" max="100" value="${currentGeneralDiscount}" class="w-24 p-1 border rounded-md text-right"/></div><div class="flex justify-between text-red-600"><span>Valor do Desconto Geral:</span><span class="font-medium">-${formatCurrency(valorDescontoGeral)}</span></div><div class="flex justify-between text-xl font-bold border-t-2 border-gray-800 pt-2 mt-2"><span>VALOR FINAL:</span><span class="text-gold-600">${formatCurrency(valorFinal)}</span></div></div></div>`; document.getElementById('general-discount').onchange = (e) => { let val = parseInt(e.target.value); if (isNaN(val) || val < 0) val = 0; if (val > 100) val = 100; currentGeneralDiscount = val; e.target.value = val; renderFinancialSummary(); }; };
+            const renderPhases = () => { const phasesContainer = document.getElementById('phases-container'); phasesContainer.innerHTML = `<h3 class="text-lg font-bold mb-3 border-b pb-2">Procedimentos do Protocolo</h3>${currentPhases.map((phase, phaseIndex) => { const phaseItemsHtml = (phase.items || []).map((item, itemIndex) => { const itemTotal = item.price * item.quantity; const isCourtesy = (item.discountPercentage || 0) === 100; return `<div class="grid grid-cols-12 gap-x-2 items-center bg-gray-50 p-2 rounded mb-2 text-sm"><span class="col-span-5">${item.name}</span><div class="col-span-2 flex items-center gap-2"><label class="text-xs">Qtd:</label><input type="number" value="${item.quantity}" min="1" class="w-14 p-1 border rounded-md item-quantity-input" data-phase-index="${phaseIndex}" data-item-index="${itemIndex}"/></div><div class="col-span-2 flex items-center justify-center"><input type="checkbox" id="courtesy-${phaseIndex}-${itemIndex}" class="item-courtesy-checkbox" data-phase-index="${phaseIndex}" data-item-index="${itemIndex}" ${isCourtesy ? 'checked' : ''}/><label for="courtesy-${phaseIndex}-${itemIndex}" class="text-xs ml-1">Bônus (100%)</label></div><div class="col-span-2 text-right">${isCourtesy ? `<span class="text-xs text-gray-500 line-through">${formatCurrency(itemTotal)}</span><span class="font-medium ml-1 text-green-600">Bônus</span>` : `<span class="font-medium ml-1">${formatCurrency(itemTotal)}</span>`}</div><div class="col-span-1 text-right"><button type="button" class="remove-item-btn p-1 hover:bg-gray-200 rounded-full" data-phase-index="${phaseIndex}" data-item-index="${itemIndex}"><i data-lucide="trash-2" class="h-4 w-4 text-red-500"></i></button></div></div>`; }).join(''); return `<div class="border p-4 rounded-lg mb-4"><h4 class="font-semibold text-base mb-2">${phase.name} (${phase.duration})</h4><div class="mt-2">${phaseItemsHtml}</div><div class="mt-4"><label class="block text-sm font-medium text-gray-700 mb-1">Adicionar Procedimento à Fase</label><select class="add-item-select w-full p-2 border rounded-md" data-index="${phaseIndex}"><option value="">Selecione...</option>${[...state.items].sort((a,b)=>a.name.localeCompare(b.name)).map(item => `<option value="${item.id}">${item.name} - ${formatCurrency(item.price)}</option>`).join('')}</select></div><div class="mt-4"><label class="block text-sm font-medium text-gray-700 mb-1">Observações da Fase</label><textarea class="w-full p-2 border rounded-md phase-observations-input" data-phase-index="${phaseIndex}" placeholder="Observações...">${phase.observations || ''}</textarea></div></div>`; }).join('')}`; attachPhaseListeners(); };
+            const renderAttachedCoverTextsManager = () => { const container = document.getElementById('text-blocks-container'); const attachedTextsHtml = currentAttachedTextIds.map(textId => { const textBlock = state.textBlocks.find(t => t.id === textId); return `<div class="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 text-sm"><span>${textBlock?.versionName || 'Texto não encontrado'}</span><button type="button" class="remove-text-btn p-1 hover:bg-red-100 rounded-full" data-id="${textId}"><i data-lucide="x" class="h-4 w-4 text-red-600"></i></button></div>`; }).join(''); container.innerHTML = `<div class="border p-4 rounded-lg"><h3 class="text-lg font-bold mb-3 border-b pb-2">Textos Adicionais da Capa</h3><div id="attached-texts-list" class="mb-4">${attachedTextsHtml.length > 0 ? attachedTextsHtml : '<p class="text-sm text-gray-500">Nenhum texto adicional anexado.</p>'}</div><div class="flex items-center gap-2"><select id="add-text-block-select" class="w-full p-2 border rounded-md"><option value="">Selecione um texto para adicionar...</option>${[...state.textBlocks].filter(t=>t.category === 'geral').sort((a,b)=>a.versionName.localeCompare(b.versionName)).map(t => `<option value="${t.id}">${t.versionName}</option>`).join('')}</select><button id="add-text-block-btn" type="button" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 whitespace-nowrap">Anexar</button></div></div>`; lucide.createIcons(); document.getElementById('add-text-block-btn').onclick = () => { const select = document.getElementById('add-text-block-select'); const textId = select.value; if (textId && !currentAttachedTextIds.includes(textId)) { currentAttachedTextIds.push(textId); renderAttachedCoverTextsManager(); } select.value = ''; }; document.querySelectorAll('.remove-text-btn').forEach(btn => { btn.onclick = () => { const textId = btn.dataset.id; currentAttachedTextIds = currentAttachedTextIds.filter(id => id !== textId); renderAttachedCoverTextsManager(); }; }); };
+            const attachPhaseListeners = () => { lucide.createIcons(); document.querySelectorAll('.item-quantity-input').forEach(input => { input.onchange = (e) => { const { phaseIndex, itemIndex } = e.target.dataset; currentPhases[phaseIndex].items[itemIndex].quantity = parseInt(e.target.value) || 1; rerenderAllComponents(); }; }); document.querySelectorAll('.item-courtesy-checkbox').forEach(checkbox => { checkbox.onchange = (e) => { const { phaseIndex, itemIndex } = e.target.dataset; currentPhases[phaseIndex].items[itemIndex].discountPercentage = e.target.checked ? 100 : 0; rerenderAllComponents(); } }); document.querySelectorAll('.phase-observations-input').forEach(textarea => { textarea.onchange = (e) => { const { phaseIndex } = e.target.dataset; currentPhases[phaseIndex].observations = e.target.value; }; }); document.querySelectorAll('.remove-item-btn').forEach(btn => { btn.onclick = (e) => { const { phaseIndex, itemIndex } = e.currentTarget.closest('button').dataset; currentPhases[phaseIndex].items.splice(itemIndex, 1); rerenderAllComponents(); }; }); document.querySelectorAll('.add-item-select').forEach(sel => { sel.onchange = (e) => { const phaseIndex = parseInt(e.target.dataset.index); const item = state.items.find(i => i.id === e.target.value); if(item) { if(!currentPhases[phaseIndex].items) currentPhases[phaseIndex].items = []; currentPhases[phaseIndex].items.push({...item, quantity: 1, discountPercentage: 0}); rerenderAllComponents(); } e.target.value = ""; }; }); };
+            const rerenderAllComponents = () => { renderPhases(); renderAttachedCoverTextsManager(); renderFinancialSummary(); };
+           
+            pageContent.innerHTML = `<form id="protocol-editor-form" class="bg-white p-6 rounded-lg shadow space-y-6 max-w-5xl mx-auto"><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div><label class="block text-sm font-medium text-gray-700 mb-1">Nome do Protocolo</label><input type="text" id="protocolName" value="${p.protocolName}" required class="w-full p-2 border rounded-md"/></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Cliente</label><select id="contactId" required class="w-full p-2 border rounded-md">${[...state.contacts].sort((a,b) => a.name.localeCompare(b.name)).map(c => `<option value="${c.id}" ${c.id === p.contactId ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div><div><label class="block text-sm font-medium text-gray-700 mb-1">Validade da Proposta (dias)</label><input type="number" id="proposalValidity" value="${currentProposalValidity}" min="1" class="w-full p-2 border rounded-md"/></div><div class="md:col-span-3"><label class="block text-sm font-medium text-gray-700 mb-1">Médico Responsável</label><select id="doctorId" required class="w-full p-2 border rounded-md">${[...state.doctors].sort((a,b) => a.name.localeCompare(b.name)).map(d => `<option value="${d.id}" ${d.id === p.doctorId ? 'selected' : ''}>${d.name} - ${d.crm}</option>`).join('')}</select></div></div><div id="phases-container" class="mt-6"></div><div id="text-blocks-container" class="mt-6"></div><div id="final-observations-container" class="mt-6"></div><div id="financial-summary-container" class="mt-6"></div><div class="flex justify-end gap-4 pt-4 border-t mt-6"><button type="button" id="cancel-btn" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300">Cancelar</button><button type="submit" class="bg-gold-500 text-white px-6 py-2 rounded-lg hover:bg-gold-600">Salvar Alterações</button></div></form>`;
+           
+            const finalObsContainer = document.getElementById('final-observations-container');
+            finalObsContainer.appendChild(
+                h('div', { className: 'border p-4 rounded-lg' },
+                    h('label', { className: 'block text-lg font-bold mb-3', for: 'final-obs-textarea' }, 'Observações Finais (Pós-financeiro)'),
+                    h('textarea', { id: 'final-obs-textarea', className: 'w-full p-2 border rounded-md', rows: '5', placeholder: 'Digite aqui as observações gerais para o cliente...', onchange: (e) => { currentFinalObservations = e.target.value; }}, currentFinalObservations)
+                )
+            );
+
+            document.getElementById('protocolName').addEventListener('input', (e) => { e.target.value = capitalizeWords(e.target.value); });
+            rerenderAllComponents();
+            document.getElementById('cancel-btn').onclick = () => navigateTo(p.proposalGroupId ? 'protocol-group-view' : 'protocols', { groupId: p.proposalGroupId });
+            document.getElementById('proposalValidity').onchange = (e) => { currentProposalValidity = parseInt(e.target.value) || 30; };
+            document.getElementById('protocol-editor-form').onsubmit = (e) => { e.preventDefault(); const protocolName = document.getElementById('protocolName').value; const contactId = document.getElementById('contactId').value; const doctorId = document.getElementById('doctorId').value; const selectedContact = state.contacts.find(c => c.id === contactId); const selectedDoctor = state.doctors.find(d => d.id === doctorId); const grossTotal = currentPhases.reduce((total, phase) => total + (phase.items || []).reduce((phaseTotal, item) => phaseTotal + (item.price * item.quantity), 0), 0); const updatedProtocol = { ...p, protocolName, contactId, contactName: selectedContact.name, doctorId, doctorName: selectedDoctor.name, doctorCrm: selectedDoctor.crm, phases: currentPhases.map(phase => ({ name: phase.name, duration: phase.duration, observations: phase.observations, items: phase.items.map(item => ({ id: item.id, quantity: item.quantity, discountPercentage: item.discountPercentage || 0 })) })), totalValue: grossTotal, discountPercentage: currentGeneralDiscount, attachedTextIds: currentAttachedTextIds, finalObservations: currentFinalObservations, proposalValidityDays: currentProposalValidity, treatmentDuration: p.treatmentDuration, totalSessions: p.totalSessions }; const index = state.protocols.findIndex(proto => proto.id === p.id); state.protocols[index] = updatedProtocol; persist(); alert("Protocolo atualizado com sucesso!"); navigateTo(p.proposalGroupId ? 'protocol-group-view' : 'protocols', { groupId: p.proposalGroupId }); };
+        }
+       
+        function renderItemList() {
+            const page = h('div', { className: 'bg-white p-6 rounded-lg shadow max-w-5xl mx-auto' }, h('div', { className: 'flex justify-between items-center mb-4' }, h('div', { className: 'relative' }, h('i', { 'data-lucide': 'search', className: 'absolute left-3 top-1/2 -translate-y-1/2 text-gray-400' }), h('input', { id: 'search-item', type: 'text', placeholder: 'Buscar procedimento...', className: 'pl-10 pr-4 py-2 border rounded-lg w-80' })), h('button', { className: 'bg-gold-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gold-600', onclick: () => openItemModal() }, h('i', { 'data-lucide': 'plus' }), ' Novo Procedimento')), h('table', { className: 'w-full text-left' }, h('thead', {}, h('tr', { className: 'border-b' }, h('th', { className: 'p-4' }, 'Nome'), h('th', { className: 'p-4' }, 'Preço'), h('th', { className: 'p-4' }))), h('tbody', { id: 'item-table-body' })));
+            pageContent.replaceChildren(page);
+            const tableBody = document.getElementById('item-table-body'); const searchInput = document.getElementById('search-item');
+            const renderItemTableRows = (itemsToRender) => { const rows = itemsToRender.map(item =>  h('tr', { className: 'border-b hover:bg-gray-50' }, h('td', { className: 'p-4 font-medium' }, item.name, item.type === 'kit' ? h('span', {className: 'ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full'}, 'Kit') : null), h('td', { className: 'p-4' }, formatCurrency(item.price)), h('td', { className: 'p-4 text-right' }, h('div', { className: 'flex items-center justify-end gap-2' }, h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => openItemModal(item), title: 'Editar' }, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })), h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => { if (confirm("Tem certeza que deseja apagar este procedimento?")) { state.items = state.items.filter(i => i.id !== item.id); persist(); renderPage(); } }, title: 'Deletar'}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))))) ); tableBody.replaceChildren(...rows); lucide.createIcons(); };
+            const sortedItems = [...state.items].sort((a, b) => a.name.localeCompare(b.name));
+            searchInput.addEventListener('keyup', () => { const term = searchInput.value.toLowerCase(); const filtered = sortedItems.filter(item => item.name.toLowerCase().includes(term)); renderItemTableRows(filtered); });
+            renderItemTableRows(sortedItems);
+        }
+
+        function renderContactList() {
+            const page = h('div', { className: 'bg-white p-6 rounded-lg shadow max-w-5xl mx-auto' }, h('div', { className: 'flex justify-between items-center mb-4' }, h('div', { className: 'relative' }, h('i', { 'data-lucide': 'search', className: 'absolute left-3 top-1/2 -translate-y-1/2 text-gray-400' }), h('input', { id: 'search-contact', type: 'text', placeholder: 'Buscar cliente...', className: 'pl-10 pr-4 py-2 border rounded-lg w-80' })), h('button', { className: 'bg-gold-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gold-600', onclick: () => openContactModal() }, h('i', { 'data-lucide': 'plus' }), ' Novo Cliente')), h('div', { id: 'contact-grid', className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' }));
+            pageContent.replaceChildren(page);
+            const contactGrid = document.getElementById('contact-grid'); const searchInput = document.getElementById('search-contact'); const sortedContacts = [...state.contacts].sort((a,b) => a.name.localeCompare(b.name));
+            const renderContactCards = (contactsToRender) => { const cards = contactsToRender.map(contact =>  h('div', { className: 'border p-4 rounded-lg flex justify-between items-start' }, h('div', {}, h('p', { className: 'font-bold' }, contact.name), h('p', { className: 'text-sm text-gray-600' }, contact.phone || ''), h('p', { className: 'text-sm text-gray-600' }, contact.email || '')), h('div', { className: 'flex gap-2' }, h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => openContactModal(contact) }, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })), h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => { if (confirm("Tem certeza que deseja apagar este cliente?")) { state.contacts = state.contacts.filter(c => c.id !== contact.id); persist(); renderPage(); } }}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))))); contactGrid.replaceChildren(...cards); lucide.createIcons(); };
+            searchInput.addEventListener('keyup', () => { const term = searchInput.value.toLowerCase(); const filtered = sortedContacts.filter(c => c.name.toLowerCase().includes(term)); renderContactCards(filtered); });
+            renderContactCards(sortedContacts);
+        }
+
+        function renderProtocolTemplateList() {
+            const sortedTemplates = [...state.protocolTemplates].sort((a, b) => a.protocolName.localeCompare(b.protocolName));
+            const page = h('div', { className: 'bg-white p-6 rounded-lg shadow max-w-5xl mx-auto' }, h('div', { className: 'flex justify-between items-center mb-4' }, h('h2', { className: 'text-xl font-bold' }, 'Protocolos TricoMaster Cadastrados'), h('button', { className: 'bg-gold-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gold-600', onclick: () => navigateTo('new-protocolTemplate') }, h('i', { 'data-lucide': 'plus' }), ' Novo Protocolo TricoMaster')), h('div', { className: 'overflow-x-auto' }, h('table', { className: 'w-full text-left' }, h('thead', {}, h('tr', { className: 'border-b' }, h('th', { className: 'p-4' }, 'Nome do Modelo'), h('th', { className: 'p-4' }, 'Categoria'), h('th', { className: 'p-4' }))), h('tbody', {}, ...sortedTemplates.map(p => h('tr', { className: 'border-b hover:bg-gray-50' }, h('td', { className: 'p-4 font-medium' }, p.protocolName), h('td', { className: 'p-4' }, p.category ? h('span', { className: 'bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full'}, p.category) : ''), h('td', { className: 'p-4 text-right' }, h('div', { className: 'flex items-center justify-end gap-2' }, h('button', { title: 'Editar', className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => navigateTo('edit-protocolTemplate', { templateId: p.id }) }, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })), h('button', { title: 'Copiar', className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => handleCopyTemplate(p.id) }, h('i', { 'data-lucide': 'copy', className: 'h-4 w-4 text-green-600' })), h('button', { title: 'Deletar', className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => { if (confirm("Tem certeza que deseja apagar este modelo?")) { state.protocolTemplates = state.protocolTemplates.filter(pt => pt.id !== p.id); persist(); renderPage(); } }}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))))))))));
+            pageContent.replaceChildren(page);
+        }
+        function renderProtocolTemplateGenerator() {
+            const isEditing = state.page === 'edit-protocolTemplate';
+            const p = state.editingTemplate;
+            const categories = ["Androgenética", "Areata", "Cicatricial", "Crescimento", "Queda"].sort();
+           
+            let currentData = { protocolName: '', totalValue: 0, treatmentDuration: '', totalSessions: '', category: '', phases: [{ name: 'Fase 1', duration: '', items: [], observations: '' }], coverTexts: {}, attachedTextIds: [] };
+            if (isEditing) {
+                currentData = JSON.parse(JSON.stringify(p));
+                currentData.category = p.category || '';
+                currentData.coverTexts = p.coverTexts || {};
+                currentData.attachedTextIds = p.attachedTextIds || [];
+                currentData.phases.forEach(phase => { phase.items = (phase.items || []).map(itemData => ({...state.items.find(i => i.id === itemData.id), quantity: itemData.quantity})).filter(Boolean); });
+            }
+                   
+            let phasesContainer, totalValueSpan;
+
+            const updateTotal = () => {
+                const totalValue = (currentData.phases || []).reduce((total, phase) => {
+                    return total + (phase.items || []).reduce((phaseTotal, item) => {
+                        const fullItemInfo = state.items.find(i => i.id === item.id);
+                        if (!fullItemInfo) return phaseTotal;
+                        let itemValue = 0;
+                        if (fullItemInfo.type === 'kit') {
+                            itemValue = (fullItemInfo.components || []).reduce((sum, comp) => {
+                                const compInfo = state.items.find(c => c.id === comp.id);
+                                return sum + (compInfo ? compInfo.price * comp.quantity : 0);
+                            }, 0);
+                        } else { itemValue = fullItemInfo.price; }
+                        return phaseTotal + (itemValue * item.quantity);
+                    }, 0);
+                }, 0);
+                currentData.totalValue = totalValue;
+                if (totalValueSpan) totalValueSpan.textContent = formatCurrency(totalValue);
+            };
+
+            const renderPhases = () => {
+                const phaseElements = (currentData.phases || []).map((phase, phaseIndex) => {
+                    const itemsList = (phase.items || []).flatMap((item, itemIndex) => {
+                        const fullItemInfo = state.items.find(i => i.id === item.id) || {};
+                        const displayPrice = fullItemInfo.type === 'kit' 
+                            ? (fullItemInfo.components || []).reduce((sum, comp) => { const compInfo = state.items.find(c => c.id === comp.id); return sum + (compInfo ? compInfo.price * comp.quantity : 0); }, 0)
+                            : fullItemInfo.price;
+                        const mainItem = h('div', { className: 'grid grid-cols-12 gap-2 items-center p-2 rounded transition-colors hover:bg-gray-200' }, 
+                            h('span', { className: 'col-span-5 font-medium' }, item.name, item.type === 'kit' ? h('span', {className: 'ml-2 text-xs text-blue-600'}, '(Kit)') : null),
+                            h('div', { className: 'col-span-2' }, h('input', { type: 'number', value: item.quantity, min: '1', className: 'w-full p-1 border rounded-md', onchange: (e) => { phase.items[itemIndex].quantity = parseInt(e.target.value) || 1; rerender(); } })),
+                            h('div', { className: 'col-span-4 text-right' }, h('span', {}, `x ${formatCurrency(displayPrice)} = ${formatCurrency(displayPrice * item.quantity)}`)),
+                            h('div', { className: 'col-span-1 flex justify-end' }, h('button', { type: 'button', className:'p-1', onclick: () => { phase.items.splice(itemIndex, 1); rerender(); } }, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' })))
+                        );
+                        if (item.type === 'kit' && item.components) {
+                            const componentItems = item.components.map(comp => {
+                                const compInfo = state.items.find(i => i.id === comp.id);
+                                return h('div', { className: 'grid grid-cols-12 gap-2 items-center pl-6' }, h('span', { className: 'col-span-11 text-sm italic text-gray-600' }, `- ${comp.quantity}x ${compInfo?.name || 'Procedimento não encontrado'}`),);
+                            });
+                            return [mainItem, ...componentItems];
+                        }
+                        return [mainItem];
+                    });
+                    return h('div', { className: `border p-4 rounded-lg mb-4 ${phaseIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}` }, 
+                        h('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-4' }, h('input', { type: 'text', value: phase.name, className: 'p-2 border rounded-md', placeholder: 'Nome da Fase', onchange: (e) => { phase.name = e.target.value; }, oninput: (e) => e.target.value = capitalizeWords(e.target.value) }), h('input', { type: 'text', value: phase.duration, className: 'p-2 border rounded-md', placeholder: 'Duração (ex: 30 dias)', onchange: (e) => { phase.duration = e.target.value; } })), 
+                        h('div', {}, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Adicionar Procedimento'), h('select', { className: 'add-item-select w-full p-2 border rounded-md', onchange: (e) => { const itemId = e.target.value; const item = state.items.find(i => i.id === itemId); if (item) { if (!phase.items) phase.items = []; phase.items.push({ ...item, quantity: 1 }); rerender(); } e.target.value = ""; }}, h('option', { value: '' }, 'Selecione...'), ...[...state.items].sort((a,b)=>a.name.localeCompare(b.name)).map(item => h('option', { value: item.id }, `${item.name} - ${formatCurrency(item.price)}`)))), 
+                        h('div', { className: 'mt-4 space-y-1' }, ...itemsList), 
+                        h('div', { className: 'mt-4' }, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Observações da Fase'), h('textarea', { className: 'w-full p-2 border rounded-md', placeholder: 'Observações...', onchange: (e) => { phase.observations = e.target.value; }}, phase.observations || '')));
+                });
+                if (phasesContainer) phasesContainer.replaceChildren(...phaseElements);
+                lucide.createIcons();
+            };
+
+            const renderAttachedTextsManager = () => {
+                const container = document.getElementById('attached-texts-manager');
+                const attachedTextsHtml = currentData.attachedTextIds.map(textId => {
+                    const textBlock = state.textBlocks.find(t => t.id === textId);
+                    return h('div', { className: 'flex items-center justify-between bg-gray-100 p-2 rounded mb-2 text-sm' }, 
+                        h('span', {}, `${textBlock?.versionName || 'Texto não encontrado'}`), 
+                        h('button', { type: 'button', className: 'remove-attached-text-btn p-1 hover:bg-red-100 rounded-full', dataset: { id: textId }}, h('i', { 'data-lucide': 'x', className: 'h-4 w-4 text-red-600' }))
+                    );
+                });
+                container.innerHTML = ''; // Clear previous content
+                container.append(...attachedTextsHtml);
+                lucide.createIcons();
+                document.querySelectorAll('.remove-attached-text-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        const textId = btn.dataset.id;
+                        currentData.attachedTextIds = currentData.attachedTextIds.filter(id => id !== textId);
+                        renderAttachedTextsManager();
+                    };
+                });
+            };
+
+            const rerender = () => {
+                const scrollPos = pageContent.scrollTop;
+                renderPhases();
+                renderAttachedTextsManager();
+                updateTotal();
+                pageContent.scrollTop = scrollPos;
+            };
+
+            const handleSave = (e) => {
+                e.preventDefault();
+                if (!currentData.protocolName || !currentData.protocolName.trim()) { alert("O nome do protocolo não pode estar em branco."); return; }
+                const totalValue = (currentData.phases || []).reduce((total, phase) => total + (phase.items || []).reduce((phaseTotal, item) => { const fullItemInfo = state.items.find(i => i.id === item.id); if (!fullItemInfo) return phaseTotal; let itemValue = 0; if (fullItemInfo.type === 'kit') { itemValue = (fullItemInfo.components || []).reduce((sum, comp) => { const compInfo = state.items.find(c => c.id === comp.id); return sum + (compInfo ? compInfo.price * comp.quantity : 0); }, 0); } else { itemValue = fullItemInfo.price; } return phaseTotal + (itemValue * item.quantity); }, 0), 0);
+                const templateData = { ...currentData, totalValue, phases: (currentData.phases || []).map(p => ({ name: p.name, duration: p.duration, observations: p.observations, items: (p.items || []).map(i => ({ id: i.id, quantity: i.quantity })) })) };
+                if (isEditing) {
+                    const index = state.protocolTemplates.findIndex(t => t.id === p.id);
+                    state.protocolTemplates[index] = templateData;
+                    alert("Protocolo TricoMaster atualizado com sucesso!");
+                } else {
+                    templateData.id = `pt${Date.now()}`;
+                    state.protocolTemplates.push(templateData);
+                    alert("Protocolo TricoMaster salvo com sucesso!");
+                }
+                persist();
+                navigateTo('protocolTemplates');
+            };
+
+            const createCoverTextSelector = (categoryKey) => {
+                const availableTexts = state.textBlocks.filter(b => b.category === categoryKey).sort((a,b) => a.versionName.localeCompare(b.versionName));
+                const options = [h('option', {value: ''}, 'Selecione uma versão...'), ...availableTexts.map(text => h('option', {value: text.id, selected: currentData.coverTexts[categoryKey] === text.id }, text.versionName))];
+                return h('div', {}, h('label', {className: 'block text-sm font-medium text-gray-700 mb-1'}, TEXT_CATEGORIES[categoryKey]), h('select', {className:'w-full p-2 border rounded-md', onchange: e => { currentData.coverTexts[categoryKey] = e.target.value }}, ...options));
+            };
+            
+            const coverTextsSection = h('div', {className: 'border p-4 rounded-lg space-y-4'}, h('h3', {className: 'text-lg font-bold'}, 'Textos Fixos da Capa'), createCoverTextSelector('sobre_a_tricomaster'), createCoverTextSelector('indicacao'), createCoverTextSelector('beneficios'), createCoverTextSelector('falta_tratamento'));
+            
+            const attachedTextsSection = h('div', { className: 'border p-4 rounded-lg' },
+                h('h3', { className: 'text-lg font-bold mb-3' }, 'Textos Adicionais da Capa'),
+                h('div', { id: 'attached-texts-manager', className: 'mb-4 space-y-2' }),
+                h('div', { className: 'flex items-center gap-2' },
+                    h('select', { id: 'add-attached-text-select', className: 'w-full p-2 border rounded-md' }, h('option', { value: '' }, 'Selecione um texto para adicionar...'), ...[...state.textBlocks].filter(t => t.category === 'geral').sort((a, b) => a.versionName.localeCompare(b.versionName)).map(t => h('option', { value: t.id }, t.versionName))),
+                    h('button', { id: 'add-attached-text-btn', type: 'button', className: 'bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 whitespace-nowrap' }, 'Adicionar')
+                )
+            );
+            
+            phasesContainer = h('div');
+            totalValueSpan = h('span', { className: 'text-gold-600' });
+            const page = h('form', { className: 'bg-white p-6 rounded-lg shadow space-y-6 max-w-5xl mx-auto', onsubmit: handleSave, onkeydown: (e) => { if (e.key === 'Enter') e.preventDefault(); } }, 
+                h('div', { className: 'space-y-4'}, h('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4 items-end' }, h('div', {}, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Nome do Protocolo TricoMaster'), h('input', { type: 'text', value: currentData.protocolName, required: true, className: 'w-full p-2 border rounded-md', oninput: (e) => currentData.protocolName = capitalizeWords(e.target.value) })), h('div', {}, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Categoria'), h('select', {id: 'category-select', className:'w-full p-2 border rounded-md', onchange: e => { currentData.category = e.target.value }}, h('option',{value:''}, 'Nenhuma'), ...categories.map(c => h('option', {value: c, selected: currentData.category === c}, c))))), h('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-4' }, h('div', {}, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Tempo de Tratamento'), h('input', { type: 'text', value: currentData.treatmentDuration || '', placeholder: "Ex: 3 meses", className: 'w-full p-2 border rounded-md', onchange: e => { currentData.treatmentDuration = e.target.value; } })), h('div', {}, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'N° de Fases'), h('input', { type: 'number', min: '1', value: (currentData.phases || []).length, className: 'w-full p-2 border rounded-md', onchange: e => { const newPhaseCount = parseInt(e.target.value) || 1; e.target.value = newPhaseCount; const oldPhaseCount = (currentData.phases || []).length; if (newPhaseCount > oldPhaseCount) { for (let i = oldPhaseCount; i < newPhaseCount; i++) { currentData.phases.push({ name: `Fase ${i + 1}`, duration: '', items: [] }); } } else { currentData.phases.splice(newPhaseCount); } rerender(); }})), h('div', {}, h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, 'Número de Sessões'), h('input', { type: 'text', value: currentData.totalSessions || '', placeholder: "Ex: 12", className: 'w-full p-2 border rounded-md', onchange: e => { currentData.totalSessions = e.target.value; } })))), 
+                coverTextsSection,
+                attachedTextsSection,
+                h('div', {}, h('h3', { className: 'font-semibold text-lg mb-2 mt-4' }, 'Fases do Protocolo'), phasesContainer), 
+                h('div', { className: 'flex justify-between items-center pt-4 border-t' }, h('div', { className: 'text-xl font-bold' }, 'Total (Valor Avulso): ', totalValueSpan), h('div', { className: 'flex gap-4' }, h('button', { type: 'button', className: 'bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300', onclick: () => navigateTo('protocolTemplates') }, 'Cancelar'), h('button', { type: 'submit', className: 'bg-gold-500 text-white px-6 py-2 rounded-lg hover:bg-gold-600' }, 'Salvar Protocolo TricoMaster')))
+            );
+            pageContent.replaceChildren(page);
+
+            document.getElementById('add-attached-text-btn').onclick = () => {
+                const select = document.getElementById('add-attached-text-select');
+                const textId = select.value;
+                if (textId && !currentData.attachedTextIds.includes(textId)) {
+                    currentData.attachedTextIds.push(textId);
+                    renderAttachedTextsManager();
+                }
+                select.value = '';
+            };
+
+            if(isEditing) { document.getElementById('category-select').value = currentData.category; }
+            rerender();
+        }
+
+        function renderTextsPage() {
+            const groupedTexts = (state.textBlocks || []).reduce((acc, block) => {
+                if (!acc[block.category]) acc[block.category] = [];
+                acc[block.category].push(block);
+                return acc;
+            }, {});
+
+            const page = h('div', { className: 'space-y-6 max-w-5xl mx-auto' }, 
+                h('div', { className: 'flex justify-end items-center' }, 
+                    h('button', { className: 'bg-gold-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gold-600', onclick: () => openTextBlockModal() }, 
+                        h('i', { 'data-lucide': 'plus' }), ' Novo Texto'
+                    )
+                ),
+                ...Object.keys(TEXT_CATEGORIES).map(categoryKey => {
+                    const textsInCategory = (groupedTexts[categoryKey] || []).sort((a,b) => a.versionName.localeCompare(b.versionName));
+                    if (textsInCategory.length === 0) return null;
+                    return h('div', { className: 'bg-white p-4 rounded-lg shadow' },
+                        h('h2', { className: 'text-xl font-bold mb-3 border-b pb-2' }, TEXT_CATEGORIES[categoryKey]),
+                        h('div', { className: 'space-y-3' }, 
+                            ...textsInCategory.map(block => 
+                                h('div', { className: 'border p-3 rounded-md' }, 
+                                    h('div', { className: 'flex justify-between items-center mb-2' }, 
+                                        h('h3', { className: 'text-md font-semibold' }, block.versionName),
+                                        h('div', { className: 'flex gap-2' }, 
+                                            h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => openTextBlockModal(block) }, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })), 
+                                            h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => { if (confirm(`Tem certeza que deseja excluir o texto "${block.versionName}"?`)) { state.textBlocks = state.textBlocks.filter(b => b.id !== block.id); persist(); renderPage(); } }}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))
+                                        )
+                                    ), 
+                                    h('p', { className: 'text-gray-700 whitespace-pre-wrap text-sm' }, block.content)
+                                )
+                            )
+                        )
+                    );
+                }).filter(Boolean)
+            );
+            pageContent.replaceChildren(page);
+        }
+
+        function renderProfilePage() {
+            const clinicInfo = state.clinicInfo;
+            const nameInput = h('input', { type:'text', className:'input-field', value: clinicInfo.name, oninput: (e) => e.target.value = capitalizeWords(e.target.value) });
+            const cnpInput = h('input', { type:'text', className:'input-field', value: clinicInfo.cnpj });
+            const phoneInput = h('input', { type:'text', className:'input-field', value: clinicInfo.phone });
+            const whatsappInput = h('input', { type:'text', className:'input-field', value: clinicInfo.whatsapp });
+            const addressInput = h('input', { type:'text', className:'input-field', value: clinicInfo.address });
+            const address2Input = h('input', { type:'text', className:'input-field', value: clinicInfo.address2 || '' });
+            const siteInput = h('input', { type:'text', className:'input-field', value: clinicInfo.site });
+            const printLogoInput = h('input', { type:'text', className:'input-field', value: clinicInfo.printLogo || '' });
+            const handleClinicSave = (e) => { e.preventDefault(); state.clinicInfo.name = nameInput.value; state.clinicInfo.cnpj = cnpInput.value; state.clinicInfo.phone = phoneInput.value; state.clinicInfo.whatsapp = whatsappInput.value; state.clinicInfo.address = addressInput.value; state.clinicInfo.address2 = address2Input.value; state.clinicInfo.site = siteInput.value; state.clinicInfo.printLogo = printLogoInput.value; persist(); alert('Dados da clínica atualizados com sucesso!'); renderAll(); };
+            const backupData = () => { const data = localStorage.getItem(PERSIST_KEY); if (!data) { alert('Nenhum dado para fazer backup.'); return; } const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `tricomaster_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); };
+            const restoreData = (event) => { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { const content = e.target.result; try { const parsedData = JSON.parse(content); if (parsedData && typeof parsedData === 'object' && 'protocols' in parsedData) { if (confirm('Tem certeza que deseja restaurar este backup? TODOS os dados atuais serão substituídos. Esta ação não pode ser desfeita.')) { localStorage.setItem(PERSIST_KEY, content); alert('Backup restaurado com sucesso! A página será recarregada.'); window.location.reload(); } } else { alert('Arquivo de backup inválido.'); } } catch (err) { alert('Erro ao ler o arquivo de backup...'); console.error("Erro ao restaurar:", err); } }; reader.readAsText(file); event.target.value = ''; };
+            const clinicCard = h('div', { className: 'bg-white p-6 rounded-lg shadow' }, h('h2', { className: 'text-xl font-bold mb-4 border-b pb-2' }, 'Dados da Clínica'), h('form', { className: 'space-y-4', onsubmit: handleClinicSave }, h('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' }, h('div', {}, h('label', {className: 'label-field'}, 'Nome da Clínica'), nameInput), h('div', {}, h('label', {className: 'label-field'}, 'CNPJ'), cnpInput), h('div', {}, h('label', {className: 'label-field'}, 'Telefone'), phoneInput), h('div', {}, h('label', {className: 'label-field'}, 'WhatsApp'), whatsappInput), h('div', {className: 'md:col-span-2'}, h('label', {className: 'label-field'}, 'Endereço (Linha 1)'), addressInput), h('div', {className: 'md:col-span-2'}, h('label', {className: 'label-field'}, 'Endereço (Linha 2)'), address2Input), h('div', {className: 'md:col-span-2'}, h('label', {className: 'label-field'}, 'Site'), siteInput), h('div', {className: 'md:col-span-2'}, h('label', {className: 'label-field'}, 'URL do Logo para Impressão'), printLogoInput)), h('div', { className: 'flex justify-end mt-4' }, h('button', { type: 'submit', className: 'bg-gold-500 text-white px-6 py-2 rounded-lg hover:bg-gold-600' }, 'Salvar Alterações'))));
+            const doctorsList = h('div', { className: 'space-y-2 mt-4' }); (state.doctors || []).forEach(doc => { doctorsList.appendChild(h('div', { className: 'flex justify-between items-center bg-gray-50 p-2 rounded' }, h('div', {}, h('p', { className: 'font-medium' }, doc.name), h('p', { className: 'text-sm text-gray-500' }, `CRM: ${doc.crm}`)), h('div', { className: 'flex gap-2' }, h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => openDoctorModal(doc) }, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })), h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => { if (confirm(`Tem certeza que deseja excluir o médico(a) ${doc.name}?`)) { state.doctors = state.doctors.filter(d => d.id !== doc.id); persist(); renderPage(); } }}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))))) });
+            const doctorsCard = h('div', { className: 'bg-white p-6 rounded-lg shadow' }, h('div', { className: 'flex justify-between items-center mb-4 border-b pb-2' }, h('h2', { className: 'text-xl font-bold' }, 'Médicos'), h('button', { className: 'bg-gold-500 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1 hover:bg-gold-600', onclick: () => openDoctorModal() }, h('i', {'data-lucide':'plus', className:'h-4 w-4'}), 'Adicionar')), doctorsList);
+            const professionalsList = h('div', { className: 'space-y-2 mt-4' }); (state.professionals || []).forEach(prof => { professionalsList.appendChild(h('div', { className: 'flex justify-between items-center bg-gray-50 p-2 rounded' }, h('p', { className: 'font-medium' }, prof.name), h('div', { className: 'flex gap-2' }, h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => openProfessionalModal(prof) }, h('i', { 'data-lucide': 'edit', className: 'h-4 w-4' })), h('button', { className: 'p-1 hover:bg-gray-200 rounded-full', onclick: () => { if (confirm(`Tem certeza que deseja excluir o profissional ${prof.name}?`)) { state.professionals = state.professionals.filter(p => p.id !== prof.id); persist(); renderPage(); } }}, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4 text-red-500' }))))) });
+            const professionalsCard = h('div', { className: 'bg-white p-6 rounded-lg shadow' }, h('div', { className: 'flex justify-between items-center mb-4 border-b pb-2' }, h('h2', { className: 'text-xl font-bold' }, 'Profissionais'), h('button', { className: 'bg-gold-500 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1 hover:bg-gold-600', onclick: () => openProfessionalModal() }, h('i', {'data-lucide':'plus', className:'h-4 w-4'}), 'Adicionar')), professionalsList);
+            const backupCard = h('div', { className: 'bg-white p-6 rounded-lg shadow' }, h('h2', { className: 'text-xl font-bold mb-4 border-b pb-2' }, 'Backup e Restauração'), h('p', { className: 'text-sm text-gray-600 mb-4' }, 'Salve todos os seus dados em um arquivo ou restaure a partir de um backup salvo anteriormente. A restauração substituirá todos os dados atuais.'), h('div', { className: 'flex gap-4' }, h('button', { className: 'bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700', onclick: backupData }, h('i', {'data-lucide':'download'}), 'Fazer Backup'), h('button', { className: 'bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700', onclick: () => document.getElementById('restore-input').click() }, h('i', {'data-lucide':'upload'}), 'Restaurar Backup'), h('input', { type: 'file', id: 'restore-input', className: 'hidden', accept: '.json', onchange: restoreData })));
+            const page = h('div', { className: 'space-y-6 max-w-5xl mx-auto' }, clinicCard, h('div', { className: 'grid grid-cols-1 lg:grid-cols-2 gap-6' }, doctorsCard, professionalsCard), backupCard);
+            const style = h('style', {}, `.input-field { width: 100%; padding: 0.5rem; border: 1px solid #D1D5DB; border-radius: 0.375rem; } .label-field { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }`);
+            pageContent.replaceChildren(style, page);
+        }
+
+        // --- MODAIS ---
+        function closeModal() { modalContainer.innerHTML = ''; }
+       
+        function openItemModal(item = null) {
+            const isEditing = item !== null;
+            const modalTitle = isEditing ? "Editar Procedimento" : "Novo Procedimento";
+            let currentData = isEditing ? JSON.parse(JSON.stringify(item)) : { name: '', price: 0, type: 'simple', components: [] };
+           
+            let simpleFields, kitFields, componentsContainer, costSumSpan;
+
+            const rerender = () => {
+                const isKit = currentData.type === 'kit';
+                simpleFields.classList.toggle('hidden', isKit);
+                kitFields.classList.toggle('hidden', !isKit);
+
+                if (isKit) {
+                    const componentCostSum = (currentData.components || []).reduce((sum, comp) => {
+                        const itemInfo = state.items.find(i => i.id === comp.id);
+                        return sum + (itemInfo ? itemInfo.price * comp.quantity : 0);
+                    }, 0);
+                    costSumSpan.textContent = formatCurrency(componentCostSum);
+                   
+                    const componentElements = (currentData.components || []).map((comp, index) => {
+                        const itemInfo = state.items.find(i => i.id === comp.id);
+                        return h('div', { className: 'flex items-center gap-2 bg-gray-100 p-2 rounded' },
+                            h('span', { className: 'flex-1' }, `${itemInfo?.name || 'Procedimento não encontrado'}`),
+                            h('input', { type: 'number', min: '1', value: comp.quantity, className: 'w-16 p-1 border rounded', onchange: e => { comp.quantity = parseInt(e.target.value) || 1; rerender(); } }),
+                            h('button', { type: 'button', className: 'p-1 text-red-500 hover:bg-red-100 rounded-full', onclick: () => { currentData.components.splice(index, 1); rerender(); } }, h('i', { 'data-lucide': 'trash-2', className: 'h-4 w-4' }))
+                        );
+                    });
+                    componentsContainer.replaceChildren(...componentElements);
+                    lucide.createIcons();
+                }
+            };
+
+            const handleSave = (e) => {
+                e.preventDefault();
+                const finalData = { ...currentData, price: parseFloat(currentData.price) || 0 };
+                if (finalData.type === 'simple') {
+                    delete finalData.components;
+                }
+
+                if (isEditing) {
+                    state.items = state.items.map(i => i.id === item.id ? { ...finalData, id: i.id } : i);
+                } else {
+                    state.items.push({ ...finalData, id: `i${Date.now()}` });
+                }
+                persist();
+                closeModal();
+                renderPage();
+            };
+
+            const availableComponents = state.items.filter(i => i.type === 'simple' && (!isEditing || i.id !== item.id));
+            availableComponents.sort((a,b) => a.name.localeCompare(b.name));
+
+            const nameInput = h('input', { type: 'text', required: true, className: 'w-full p-2 border rounded-md', value: currentData.name, onchange: e => currentData.name = e.target.value, oninput: e => e.target.value = capitalizeWords(e.target.value) });
+           
+            const simplePriceInput = h('input', { type: 'number', required: true, step: '0.01', min: '0', className: 'w-full p-2 border rounded-md', value: currentData.price, onchange: e => {currentData.price = e.target.value} });
+            const kitPriceInput = h('input', { type: 'number', required: true, step: '0.01', min: '0', className: 'w-full p-2 border rounded-md', value: currentData.price, onchange: e => {currentData.price = e.target.value} });
+           
+            costSumSpan = h('span', { className: 'font-bold' });
+            componentsContainer = h('div', { className: 'space-y-2' });
+           
+            simpleFields = h('div', {}, h('label', { className: 'block mb-1' }, 'Preço de Venda'), simplePriceInput);
+            kitFields = h('div', { className: 'space-y-4 hidden' },
+                h('div', {}, h('label', { className: 'block mb-1' }, 'Valor de Venda do Kit'), kitPriceInput),
+                h('div', { className: 'p-2 bg-yellow-50 border border-yellow-200 rounded text-sm' }, h('p', {}, 'Soma dos componentes: ', costSumSpan)),
+                h('div', { className: 'border-t pt-4' }, 
+                    h('label', { className: 'block mb-2 font-semibold' }, 'Componentes do Kit'),
+                    h('div', { className: 'flex gap-2 mb-2' },
+                        h('select', { id: 'add-component-select', className: 'w-full p-2 border rounded-md' }, h('option', { value: '' }, 'Adicionar componente...'), ...availableComponents.map(i => h('option', { value: i.id }, i.name))),
+                        h('button', { type: 'button', className: 'bg-blue-500 text-white px-3 rounded hover:bg-blue-600', onclick: () => {
+                            const select = document.getElementById('add-component-select');
+                            const selectedId = select.value;
+                            if (selectedId && !(currentData.components || []).find(c => c.id === selectedId)) {
+                                if (!currentData.components) currentData.components = [];
+                                currentData.components.push({ id: selectedId, quantity: 1 });
+                                rerender();
+                            }
+                            select.value = '';
+                        }}, 'Add')
+                    ),
+                    componentsContainer
+                )
+            );
+           
+            const simpleRadio = h('input', { type: 'radio', name: 'item-type', value: 'simple', onchange: () => { currentData.type = 'simple'; rerender(); } });
+            const kitRadio = h('input', { type: 'radio', name: 'item-type', value: 'kit', onchange: () => { currentData.type = 'kit'; rerender(); } });
+
+            const form = h('form', { onsubmit: handleSave },
+                h('h2', { className: 'text-xl font-bold mb-4' }, modalTitle),
+                h('div', { className: 'space-y-4' },
+                    h('div', {}, h('label', { className: 'block mb-1' }, 'Nome do Procedimento'), nameInput),
+                    h('div', {}, 
+                        h('label', { className: 'block mb-2' }, 'Tipo de Procedimento'),
+                        h('div', { className: 'flex gap-4' },
+                            h('label', { className: 'flex items-center' }, simpleRadio, h('span', { className: 'ml-2' }, 'Procedimento Simples')),
+                            h('label', { className: 'flex items-center' }, kitRadio, h('span', { className: 'ml-2' }, 'Procedimento Composto (Kit)'))
+                        )
+                    ),
+                    simpleFields,
+                    kitFields
+                ),
+                h('div', { className: 'flex justify-end gap-4 mt-6' },
+                    h('button', { type: 'button', className: 'bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300', onclick: closeModal }, 'Cancelar'),
+                    h('button', { type: 'submit', className: 'bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600' }, 'Salvar')
+                )
+            );
+            modalContainer.replaceChildren(h('div', { className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center' }, h('div', { className: 'bg-white p-6 rounded-lg shadow-xl w-full max-w-lg' }, form)));
+           
+            simpleRadio.checked = true;
+            rerender(); 
+            if (isEditing && currentData.type === 'kit') {
+                kitRadio.checked = true;
+                kitRadio.dispatchEvent(new Event('change'));
+            }
+        }
+
+        function openContactModal(contact=null){const t=null!==contact,e=t?"Editar Cliente":"Novo Cliente",n=h("input",{type:"text",required:!0,className:"w-full p-2 border rounded-md",value:contact?.name||"",oninput:e=>e.target.value=capitalizeWords(e.target.value)}),o=h("input",{type:"tel",className:"w-full p-2 border rounded-md",value:contact?.phone||""}),a=h("input",{type:"email",className:"w-full p-2 border rounded-md",value:contact?.email||""}),s=h("form",{onsubmit:e=>{e.preventDefault();const s={id:t?contact.id:`c${Date.now()}`,name:n.value,phone:o.value,email:a.value};t?state.contacts=state.contacts.map(t=>t.id===contact.id?s:t):state.contacts.push(s),persist(),closeModal(),renderPage()}},h("h2",{className:"text-xl font-bold mb-4"},e),h("div",{className:"space-y-4"},h("div",{},h("label",{className:"block mb-1"},"Nome"),n),h("div",{},h("label",{className:"block mb-1"},"Telefone"),o),h("div",{},h("label",{className:"block mb-1"},"E-mail"),a)),h("div",{className:"flex justify-end gap-4 mt-6"},h("button",{type:"button",className:"bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300",onclick:closeModal},"Cancelar"),h("button",{type:"submit",className:"bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600"},"Salvar")));modalContainer.replaceChildren(h("div",{className:"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"},h("div",{className:"bg-white p-6 rounded-lg shadow-xl w-full max-w-md"},s)))}
+        function openDoctorModal(doctor=null){const t=null!==doctor,e=t?"Editar Médico":"Novo Médico",n=h("input",{type:"text",required:!0,className:"w-full p-2 border rounded-md",value:doctor?.name||"",oninput:e=>e.target.value=capitalizeWords(e.target.value)}),o=h("input",{type:"text",required:!0,className:"w-full p-2 border rounded-md",value:doctor?.crm||""}),a=h("form",{onsubmit:a=>{a.preventDefault();const s={id:t?doctor.id:`doc${Date.now()}`,name:n.value,crm:o.value};t?state.doctors=state.doctors.map(t=>t.id===doctor.id?s:t):state.doctors.push(s),persist(),closeModal(),renderPage()}},h("h2",{className:"text-xl font-bold mb-4"},e),h("div",{className:"space-y-4"},h("div",{},h("label",{className:"block mb-1"},"Nome do Médico"),n),h("div",{},h("label",{className:"block mb-1"},"CRM"),o)),h("div",{className:"flex justify-end gap-4 mt-6"},h("button",{type:"button",className:"bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300",onclick:closeModal},"Cancelar"),h("button",{type:"submit",className:"bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600"},"Salvar")));modalContainer.replaceChildren(h("div",{className:"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"},h("div",{className:"bg-white p-6 rounded-lg shadow-xl w-full max-w-md"},a)))}
+        function openProfessionalModal(professional=null){const t=null!==professional,e=t?"Editar Profissional":"Novo Profissional",n=h("input",{type:"text",required:!0,className:"w-full p-2 border rounded-md",value:professional?.name||"",oninput:e=>e.target.value=capitalizeWords(e.target.value)}),o=h("form",{onsubmit:o=>{o.preventDefault();const a={id:t?professional.id:`prof${Date.now()}`,name:n.value};t?state.professionals=state.professionals.map(t=>t.id===professional.id?a:t):state.professionals.push(a),persist(),closeModal(),renderPage()}},h("h2",{className:"text-xl font-bold mb-4"},e),h("div",{className:"space-y-4"},h("div",{},h("label",{className:"block mb-1"},"Nome do Profissional"),n)),h("div",{className:"flex justify-end gap-4 mt-6"},h("button",{type:"button",className:"bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300",onclick:closeModal},"Cancelar"),h("button",{type:"submit",className:"bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600"},"Salvar")));modalContainer.replaceChildren(h("div",{className:"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"},h("div",{className:"bg-white p-6 rounded-lg shadow-xl w-full max-w-md"},o)))}
+        function openTextBlockModal(block=null) {
+            const isEditing = block !== null;
+            const modalTitle = isEditing ? "Editar Texto" : "Novo Texto";
+            const categoryInput = h('select', { required: true, className: "w-full p-2 border rounded-md", value: block?.category || 'sobre_a_tricomaster' },
+                ...Object.keys(TEXT_CATEGORIES).map(key => h('option', { value: key }, TEXT_CATEGORIES[key]))
+            );
+            const versionNameInput = h('input', { type: "text", required: true, className: "w-full p-2 border rounded-md", value: block?.versionName || "", oninput: e => e.target.value = capitalizeWords(e.target.value) });
+            const contentInput = h('textarea', { required: true, className: "w-full p-2 border rounded-md", rows: "10" }, block?.content || "");
+            
+            const form = h("form", {
+                onsubmit: e => {
+                    e.preventDefault();
+                    const textData = {
+                        id: isEditing ? block.id : `t${Date.now()}`,
+                        category: categoryInput.value,
+                        versionName: versionNameInput.value,
+                        content: contentInput.value
+                    };
+                    if (isEditing) {
+                        state.textBlocks = state.textBlocks.map(b => b.id === block.id ? textData : b);
+                    } else {
+                        state.textBlocks.push(textData);
+                    }
+                    persist();
+                    closeModal();
+                    renderPage();
+                }
+            }, 
+                h("h2", { className: "text-xl font-bold mb-4" }, modalTitle), 
+                h("div", { className: "space-y-4" }, 
+                    h("div", {}, h("label", { className: "block mb-1" }, "Categoria do Texto"), categoryInput), 
+                    h("div", {}, h("label", { className: "block mb-1" }, "Nome da Versão"), versionNameInput), 
+                    h("div", {}, h("label", { className: "block mb-1" }, "Conteúdo"), contentInput)
+                ), 
+                h("div", { className: "flex justify-end gap-4 mt-6" }, 
+                    h("button", { type: "button", className: "bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300", onclick: closeModal }, "Cancelar"), 
+                    h("button", { type: "submit", className: "bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600" }, "Salvar")
+                )
+            );
+            
+            const modalWrapper = h("div", { className: "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" }, h("div", { className: "bg-white p-6 rounded-lg shadow-xl w-full max-w-lg" }, form));
+            contentInput.value = block?.content || "";
+            modalContainer.replaceChildren(modalWrapper);
+        }
+       
+        function getPrintableProtocolHtml(protocolId) {
+            const protocol = state.protocols.find(p => p.id === protocolId);
+            if (!protocol) return "<html><body>Protocolo não encontrado.</body></html>";
+           
+            const { totalBruto, totalDescontosIndividuais, subtotalComDescontos, valorDescontoGeral, finalValue } = getProtocolFinancials(protocol);
+
+            const generateTableRows = () => {
+                let avulsoHTML = '', protocoloHTML = '';
+                let avulsoTotalValue = 0, protocoloTotalValue = 0;
+                let totalProcedures = 0, totalKitSessions = 0;
+
+                for (const phase of (protocol.phases || [])) {
+                    let avulsoPhaseHTML = '', protocoloPhaseHTML = '';
+                    for (const itemData of (phase.items || [])) {
+                        const itemInfo = state.items.find(i => i.id === itemData.id);
+                        if (!itemInfo) continue;
+                        if (itemInfo.type === 'kit') { totalKitSessions += itemData.quantity; (itemInfo.components || []).forEach(comp => { totalProcedures += comp.quantity * itemData.quantity; }); } else { totalProcedures += itemData.quantity; }
+                        if (itemInfo.type === 'kit') { const kitAvulsoValue = (itemInfo.components || []).reduce((sum, comp) => { const compInfo = state.items.find(i => i.id === comp.id); return sum + (compInfo ? compInfo.price * comp.quantity : 0); }, 0); const kitTotalAvulsoValue = kitAvulsoValue * itemData.quantity; avulsoTotalValue += kitTotalAvulsoValue; avulsoPhaseHTML += `<tr class="border-b"><td class="py-1 pr-2 font-normal">${itemInfo.name}</td><td class="py-1 px-2 text-center">${itemData.quantity}</td><td class="py-1 pl-2 text-right font-normal">${formatCurrency(kitTotalAvulsoValue)}</td></tr>`; (itemInfo.components || []).forEach(comp => { const compInfo = state.items.find(i => i.id === comp.id); if(compInfo) { const sessionCount = comp.quantity * itemData.quantity; avulsoPhaseHTML += `<tr class="border-b"><td class="py-1 pr-2 pl-4 italic text-gray-600">${compInfo.name}</td><td class="py-1 px-2 text-center italic text-gray-600">${sessionCount}</td><td class="py-1 pl-2 text-right italic text-gray-600">${formatCurrency(compInfo.price * sessionCount)}</td></tr>`; } });
+                        } else { const itemValue = itemInfo.price * itemData.quantity; avulsoTotalValue += itemValue; avulsoPhaseHTML += `<tr class="border-b"><td class="py-1 pr-2 font-normal">${itemInfo.name}</td><td class="py-1 px-2 text-center">${itemData.quantity}</td><td class="py-1 pl-2 text-right font-normal">${formatCurrency(itemValue)}</td></tr>`; }
+                        const itemTotal = itemInfo.price * itemData.quantity; const discountValue = itemTotal * ((itemData.discountPercentage || 0) / 100); const finalItemValue = itemTotal - discountValue; const isBonus = (itemData.discountPercentage || 0) === 100; protocoloTotalValue += finalItemValue; protocoloPhaseHTML += `<tr class="border-b"><td class="py-1 pr-2 font-normal">${itemInfo.name}</td><td class="py-1 px-2 text-center">${itemData.quantity}</td><td class="py-1 pl-2 text-right font-normal">${isBonus ? 'Bônus' : formatCurrency(finalItemValue)}</td></tr>`; if (itemInfo.type === 'kit') { (itemInfo.components || []).forEach(comp => { const compInfo = state.items.find(i => i.id === comp.id); if(compInfo) { const sessionCount = comp.quantity * itemData.quantity; protocoloPhaseHTML += `<tr class="border-b"><td class="py-1 pr-2 pl-4 italic text-gray-600">${compInfo.name}</td><td class="py-1 px-2 text-center">${sessionCount}</td><td class="py-1 pl-2 text-right text-gray-600">${isBonus ? 'Bônus' : 'Incluso'}</td></tr>`; } }); }
+                    }
+                    const phaseHeader = `<div class="mt-4 break-inside-avoid"><h4 class="font-semibold bg-gray-100 p-1 rounded-t-lg">${phase.name} (${phase.duration || ''})</h4><table class="w-full text-left text-xs"><thead><tr class="border-b"><th class="py-1 pr-2 font-medium">Procedimento</th><th class="py-1 px-2 font-medium text-center">Sessões</th><th class="py-1 pl-2 font-medium text-right">Valor</th></tr></thead><tbody>`; const phaseFooter = `</tbody></table></div>`; avulsoHTML += phaseHeader + avulsoPhaseHTML + phaseFooter; protocoloHTML += phaseHeader + protocoloPhaseHTML + phaseFooter;
+                }
+                const summaryFooter = (totalValue) => `<div class="mt-2 border-t-2 border-gray-400 pt-2 text-[11px]"><div class="flex justify-between font-bold"><span class="pr-2">Procedimentos:</span><span class="whitespace-nowrap">${totalProcedures}</span></div><div class="flex justify-between font-bold"><span class="pr-2">Total de Sessãos:</span><span class="whitespace-nowrap">${totalKitSessions}</span></div><div class="flex justify-between font-bold"><span class="pr-2">Valor Total:</span><span class="whitespace-nowrap">${formatCurrency(totalValue)}</span></div></div>`;
+                return { avulsoHTML: avulsoHTML + summaryFooter(avulsoTotalValue), protocoloHTML: protocoloHTML + summaryFooter(protocoloTotalValue) };
+            };
+
+            const { avulsoHTML: phasesHtmlOriginal, protocoloHTML: phasesHtmlDiscounted } = generateTableRows();
+            const phasesCount = (protocol.phases || []).length;
+            let subtitle = `Tratamento com duração de ${protocol.treatmentDuration || '[não informado]'}`;
+            subtitle += `, em ${phasesCount} fase${phasesCount > 1 ? 's' : ''}`;
+            if (protocol.totalSessions) { subtitle += `, totalizando ${protocol.totalSessions} sessões.`; } else { subtitle += "."; }
+
+            let coverTextsHtml = '';
+            const printOrder = ['sobre_a_tricomaster', 'indicacao', 'beneficios', 'falta_tratamento'];
+            printOrder.forEach(categoryKey => {
+                const textId = protocol.coverTexts?.[categoryKey];
+                if (textId) {
+                    const block = state.textBlocks.find(t => t.id === textId);
+                    if (block) {
+                        coverTextsHtml += `<div class="mt-8 break-inside-avoid"><h3 class="text-xl font-semibold text-primary-900">${TEXT_CATEGORIES[categoryKey]}</h3><p class="text-sm text-gray-700 whitespace-pre-wrap mt-2">${block.content}</p></div>`;
+                    }
+                }
+            });
+            
+            if ((protocol.attachedTextIds || []).length > 0) { 
+                protocol.attachedTextIds.forEach(textId => { 
+                    const block = state.textBlocks.find(t => t.id === textId); 
+                    if (block) { 
+                        coverTextsHtml += `<div class="mt-6 pt-4 border-t border-gray-300 break-inside-avoid"><h3 class="text-xl font-semibold text-primary-900">${block.versionName}</h3><p class="text-sm text-gray-700 whitespace-pre-wrap mt-2">${block.content}</p></div>`; 
+                    }
+                });
+            }
+
+            let finalObsHtml = ''; 
+            if (protocol.finalObservations) { 
+                finalObsHtml += `<div class="mt-8 pt-6 border-t break-inside-avoid"><h3 class="text-lg font-semibold">Observações e Recomendações Adicionais</h3><p class="text-sm text-gray-700 whitespace-pre-wrap mt-2">${protocol.finalObservations}</p></div>`; 
+            }
+           
+            let phoneAndWhatsapp = '';
+            if(state.clinicInfo.phone) phoneAndWhatsapp += `<span>Telefone: ${state.clinicInfo.phone}</span>`;
+            if(state.clinicInfo.whatsapp) phoneAndWhatsapp += `${state.clinicInfo.phone ? '<span class="mx-2">|</span>' : ''}<span>WhatsApp: ${state.clinicInfo.whatsapp}</span>`;
+
+            const addressHtml = `<p>${state.clinicInfo.address}</p>${state.clinicInfo.address2 ? `<p>${state.clinicInfo.address2}</p>` : ''}`;
+            const generalDiscountPercent = protocol.discountPercentage || 0;
+            let discountLabel = 'Desconto Adicional';
+            if (generalDiscountPercent > 0) { discountLabel = `Desconto Adicional (${generalDiscountPercent}%)`; }
+           
+            return `<html><head><title>Protocolo - ${protocol.protocolName}</title><script src="https://cdn.tailwindcss.com"><\/script><style> @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print { display: none; } } :root { --primary-900: rgb(1, 52, 37); } .text-primary-900 { color: var(--primary-900); } </style></head><body class="font-sans bg-white"><div class="max-w-4xl mx-auto p-8"><header class="mb-4"><div class="flex justify-between items-center">${(state.clinicInfo.printLogo || state.clinicInfo.logo) ? `<img src="${state.clinicInfo.printLogo || state.clinicInfo.logo}" alt="Logo" class="h-24"/>` : '<div></div>'}<div class="text-right text-sm text-gray-600"><h2 class="text-lg font-bold text-gray-800">${state.clinicInfo.name}</h2>${addressHtml}<p>${phoneAndWhatsapp}</p><p>${state.clinicInfo.site}</p></div></div><hr class="my-4"/></header><div><div class="text-center mt-8"><h1 class="text-3xl font-bold text-gray-800">Protocolo ${protocol.protocolName}</h1></div>${coverTextsHtml}</div><div style="page-break-after: always;"></div><div><div class="mb-6 pb-2 border-b"><h2 class="text-2xl font-bold text-gray-800">Detalhamento ${protocol.protocolName}</h2><h3 class="text-lg font-semibold text-gray-600">${subtitle}</h3></div><div class="grid grid-cols-3 gap-8 my-8"><div><h2 class="text-sm font-semibold text-gray-500 uppercase">CLIENTE</h2><p class="text-lg text-gray-800">${protocol.contactName}</p></div><div><h2 class="text-sm font-semibold text-gray-500 uppercase">DATA</h2><p class="text-lg text-gray-800">${new Date(protocol.createdAt).toLocaleDateString('pt-BR')}</p></div><div><h2 class="text-sm font-semibold text-gray-500 uppercase">VALIDADE DA PROPOSTA</h2><p class="text-lg text-gray-800">${protocol.proposalValidityDays || 30} dias</p></div><div class="col-span-3"><h2 class="text-sm font-semibold text-gray-500 uppercase">MÉDICO RESPONSÁVEL</h2><p class="text-lg text-gray-800">${protocol.doctorName || ''} <span class="text-base text-gray-600">${protocol.doctorCrm ? `- CRM: ${protocol.doctorCrm}` : ''}</span></p></div></div><div class="grid grid-cols-2 gap-6 mt-4"><div><h3 class="text-lg font-bold text-gray-800 border-b pb-2 mb-2 text-center">Valores Avulso</h3>${phasesHtmlOriginal}</div><div><h3 class="text-lg font-bold text-gray-800 border-b pb-2 mb-2 text-center">Valores Protocolo</h3>${phasesHtmlDiscounted}</div></div><div style="break-inside: avoid;"><div class="mt-8 pt-6 border-t"><h2 class="text-lg font-bold text-gray-800 text-center mb-4">Investimento</h2><div class="max-w-md mx-auto text-xs space-y-1"><div class="flex justify-between py-1"><span>Valor Protocolo:</span><span class="font-medium">${formatCurrency(subtotalComDescontos)}</span></div><div class="flex justify-between py-1 text-red-600"><span>${discountLabel}:</span><span class="font-medium">-${formatCurrency(valorDescontoGeral)}</span></div><div class="flex justify-between py-2 border-t-2 border-gray-800 mt-2"><span class="text-base font-bold">VALOR FINAL:</span><span class="text-base font-bold text-gold-600">${formatCurrency(finalValue)}</span></div></div></div></div>${finalObsHtml}</div></div></body></html>`;
+        }
+
+        function getComparisonHtml(protocolIds) {
+            const protocols = protocolIds.map(id => state.protocols.find(p => p.id === id)).filter(Boolean);
+            if (protocols.length < 1 || protocols.length > 4) return "<html><body>Número de protocolos para comparação deve ser entre 1 e 4.</body></html>";
+
+            const gridClass = `grid-cols-${protocols.length}`;
+            const addressHtml = `<p>${state.clinicInfo.address}</p>${state.clinicInfo.address2 ? `<p>${state.clinicInfo.address2}</p>` : ''}`;
+            let phoneAndWhatsapp = '';
+            if(state.clinicInfo.phone) phoneAndWhatsapp += `<span>Telefone: ${state.clinicInfo.phone}</span>`;
+            if(state.clinicInfo.whatsapp) phoneAndWhatsapp += `${state.clinicInfo.phone ? '<span class="mx-2">|</span>' : ''}<span>WhatsApp: ${state.clinicInfo.whatsapp}</span>`;
+
+            const columnsHtml = protocols.map(protocol => {
+                const { finalValue } = getProtocolFinancials(protocol);
+                const procedureSummary = {};
+
+                (protocol.phases || []).forEach(phase => { (phase.items || []).forEach(itemData => { const itemInfo = state.items.find(i => i.id === itemData.id); if(itemInfo) { if (!procedureSummary[itemInfo.name]) { procedureSummary[itemInfo.name] = { quantity: 0, isBonus: false }; } procedureSummary[itemInfo.name].quantity += itemData.quantity; if ((itemData.discountPercentage || 0) === 100) { procedureSummary[itemInfo.name].isBonus = true; } } }); });
+                const paidProcedures = Object.keys(procedureSummary).filter(name => !procedureSummary[name].isBonus).sort();
+                const bonusProcedures = Object.keys(procedureSummary).filter(name => procedureSummary[name].isBonus).sort();
+                const paidProceduresHtml = paidProcedures.map(name => `<li>${procedureSummary[name].quantity}x ${name}</li>`).join('');
+                const bonusProceduresHtml = bonusProcedures.map(name => `<li>${procedureSummary[name].quantity}x ${name}</li>`).join('');
+                let proceduresHtml = '';
+                if(paidProcedures.length > 0){ proceduresHtml += `<h4 class="font-semibold mt-3 mb-1 text-sm">Procedimentos Inclusos:</h4><ul class="list-disc list-inside text-xs space-y-1 text-gray-700 flex-grow">${paidProceduresHtml}</ul>`; }
+                if(bonusProcedures.length > 0){ proceduresHtml += `<h4 class="font-semibold mt-3 mb-1 text-sm">Bônus Inclusos:</h4><ul class="list-disc list-inside text-xs space-y-1 text-green-600 flex-grow">${bonusProceduresHtml}</ul>`; }
+                return `<div class="flex flex-col border border-gray-300 rounded-lg p-3 bg-white" style="break-inside: avoid;"><h3 class="text-lg font-bold text-gray-800">${protocol.protocolName}</h3><p class="text-sm text-gray-600 mb-2">${protocol.contactName}</p><hr class="my-2"/><div class="text-xs space-y-1"><p><strong>Duração:</strong> ${protocol.treatmentDuration || 'N/D'}</p><p><strong>Sessões:</strong> ${protocol.totalSessions || 'N/D'}</p></div>${proceduresHtml}<div class="mt-auto text-center pt-3"><p class="text-xs text-gray-500">Valor Final</p><p class="text-xl font-bold text-gold-600">${formatCurrency(finalValue)}</p></div></div>`;
+            }).join('');
+
+            return `<html><head><title>Comparativo de Protocolos</title><script src="https://cdn.tailwindcss.com"><\/script><style> @media print { html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } @page { size: landscape; } .print-container { display: flex; flex-direction: column; height: 100vh; } .print-main { flex-grow: 1; display: grid; } } </style></head><body class="font-sans bg-gray-100"><div class="print-container max-w-7xl mx-auto p-4"><header class="flex justify-between items-center pb-2 border-b mb-4"><div>${(state.clinicInfo.printLogo || state.clinicInfo.logo) ? `<img src="${state.clinicInfo.printLogo || state.clinicInfo.logo}" alt="Logo" class="h-20"/>` : ''}</div><div class="text-right text-xs text-gray-600 flex-shrink-0 ml-4"><h2 class="text-base font-bold text-gray-800">${state.clinicInfo.name}</h2>${addressHtml}<p>${phoneAndWhatsapp}</p><p>${state.clinicInfo.site}</p></div></header><div class="text-center mb-4"><h1 class="text-2xl font-bold text-gray-800">Protocolos</h1></div><main class="print-main ${gridClass} gap-4">${columnsHtml}</main></div></body></html>`;
+        }
+       
+        function printComparison(protocolIds) {
+            let printContent = getComparisonHtml(protocolIds);
+            printContent = printContent.replace('</body>', `<script> setTimeout(() => { window.print(); window.close(); }, 500); <\/script></body>`);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+        }
+
+        function printProtocol(protocolId) {
+            let printContent = getPrintableProtocolHtml(protocolId);
+            printContent = printContent.replace('</body>', `<script> setTimeout(() => { window.print(); window.close(); }, 500); <\/script></body>`);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+        }
+
+        function renderProtocolPreview() {
+            const protocol = state.editingProtocol;
+            if (!protocol) {
+                pageContent.innerHTML = "Protocolo não encontrado.";
+                return;
+            }
+            const fullHtml = getPrintableProtocolHtml(protocol.id);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(fullHtml, 'text/html');
+            const bodyContent = doc.body.innerHTML;
+            const toolbar = h('div', { className: 'bg-white p-4 rounded-lg shadow-md mb-6 max-w-5xl mx-auto flex justify-between items-center' },
+                h('button', { className: 'bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 flex items-center gap-2', onclick: () => navigateTo(protocol.proposalGroupId ? 'protocol-group-view' : 'protocols', { groupId: protocol.proposalGroupId }) }, h('i', {'data-lucide': 'arrow-left'}), 'Voltar'),
+                h('button', { className: 'bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 flex items-center gap-2', onclick: () => printProtocol(protocol.id) }, h('i', {'data-lucide': 'printer'}), 'Imprimir Documento')
+            );
+            const previewContainer = h('div', { className: 'bg-white shadow-lg max-w-4xl mx-auto' });
+            previewContainer.innerHTML = bodyContent;
+           
+            pageContent.replaceChildren(toolbar, previewContainer);
+        }
+
+        // --- App Initialization ---
+        renderAll();
+    </script>
+</body>
 </html>
